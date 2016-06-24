@@ -27,48 +27,52 @@
 #include <algorithm>
 
 namespace graph {
-    template <typename vtype> struct BasicEdgeData {
-        using index_type = vtype;
+    template <typename index_type> struct BasicEdgeData {
         index_type SrcId;
         index_type DstId;
 
-        EdgeData(const EdgeData &data) : SrcID(data.SrcID), DstID(data.DstID){};
+        BasicEdgeData(const index_type srcId, const index_type dstId)
+            : SrcId(srcId), DstId(dstId) {}
 
-        EdgeData(EdgeData &&data) : SrcID(data.SrcID), DstID(data.DstID){};
+        BasicEdgeData(const BasicEdgeData &data) : SrcId(data.SrcId), DstId(data.DstId){};
 
-        EdgeData &operator=(EdgeData rhs) {
-            std::swap(SrcID, rhs.SrcID);
-            std::swap(DstID, rhs.DstID);
+        BasicEdgeData(BasicEdgeData &&data) : SrcId(data.SrcId), DstId(data.DstId){};
+
+        BasicEdgeData &operator=(BasicEdgeData rhs) {
+            std::swap(SrcId, rhs.SrcId);
+            std::swap(DstId, rhs.DstId);
             return *this;
         }
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(cereal::make_nvp("srcid", SrcID), cereal::make_nvp("dstid", DstID));
+            ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId));
         }
     };
 
-    template <typename vtype, typename wtype> struct WeightedEdgeData {
-        using index_type = vtype;
-        using weight_type = wtype;
+    template <typename index_type, typename weight_type> struct WeightedEdgeData {
         index_type SrcId;
         index_type DstId;
         weight_type Weight;
 
+        WeightedEdgeData(const index_type srcId, const index_type dstId,
+                         const weight_type weight)
+            : SrcId(srcId), DstId(dstId), Weight(weight) {}
+
         WeightedEdgeData(const WeightedEdgeData &data)
-            : SrcID(data.SrcID), DstID(data.DstID), Weight(data.Weight){};
+            : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
 
         WeightedEdgeData(WeightedEdgeData &&data)
-            : SrcID(data.SrcID), DstID(data.DstID), Weight(data.Weight){};
+            : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
 
         WeightedEdgeData &operator=(WeightedEdgeData rhs) {
-            std::swap(SrcID, rhs.SrcID);
-            std::swap(DstID, rhs.DstID);
+            std::swap(SrcId, rhs.SrcId);
+            std::swap(DstId, rhs.DstId);
             std::swap(Weight, rhs.Weight);
             return *this;
         }
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(cereal::make_nvp("srcid", SrcID), cereal::make_nvp("dstid", DstID),
+            ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId),
                cereal::make_nvp("weight", Weight));
         }
     };
@@ -76,10 +80,9 @@ namespace graph {
     // Simple implementation for a graph using CSR format.
     template <typename itype, typename etype> struct SparseGraph {
         using index_type = itype;
-        using vertex_type = itype;
         using edge_type = etype;
         using edge_container = std::vector<edge_type>;
-        using vertex_container = std::vector<vertex_type>;
+        using vertex_container = std::vector<index_type>;
         using edge_iterator = typename edge_container::const_iterator;
 
         explicit SparseGraph(const bool isDirected) : IsDirected(isDirected) {}
@@ -91,32 +94,34 @@ namespace graph {
         }
 
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
-            : VertexData(std::move(v)), OutEdgeData(std::move(e)), IsDirected(isDirected) {}
+            : Vertexes(std::move(v)),
+              Edges(std::move(e)),
+              IsDirected(isDirected) {}
 
         /// This function assume that input data is sorted by vertex ID.
         void build(std::vector<etype> &data, const std::size_t N) {
-            VertexData.assign(N + 1, 0);
-            OutEdgeData.assign(data.size(), 0);
+            Vertexes.assign(N + 1, 0);
+            Edges.assign(data.size(), 0);
             index_type currentRow = 0;
             for (auto const &val : data) {
-                VertexData[std::get<0>(val) + 1]++;
-                OutEdgeData[currentRow++] = std::get<1>(val);
+                Vertexes[val.SrcId + 1]++;
+                Edges[currentRow++] = val;
             }
 
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
-                VertexData[currentCol + 1] += VertexData[currentCol];
+                Vertexes[currentCol + 1] += Vertexes[currentCol];
             }
         }
 
         bool isDirected() { return IsDirected; };
 
-        edge_type getEdge(const index_type eid) { retrun Edges[eid]; }
+        edge_type getEdge(const index_type eid) { return Edges[eid]; }
 
         std::array<index_type, 2> edges(const index_type vid) const {
             return {Vertexes[vid], Vertexes[vid + 1]};
         }
 
-        std::tuple<edge_iterator, edge_iterator> edges(const index_type vid) const {
+        std::tuple<edge_iterator, edge_iterator> edge_iterators(const index_type vid) const {
             return std::make_tuple(std::advance(Edges.begin(), Vertexes[vid]),
                                    std::advance(Edges.begin(), Vertexes[vid + 1]));
         }
@@ -127,7 +132,7 @@ namespace graph {
         }
 
         // Graph data
-        std::vector<vertex_type> Vertexes;
+        std::vector<index_type> Vertexes;
         std::vector<edge_type> Edges;
         const bool IsDirected;
     };

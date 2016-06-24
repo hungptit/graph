@@ -1,5 +1,5 @@
 #ifndef Utils_hpp
-#defien Utils_hpp
+#define Utils_hpp
 
 #include "DataStructures.hpp"
 #include "Operators.hpp"
