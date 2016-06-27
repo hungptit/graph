@@ -10,6 +10,24 @@
 #include "graph/SparseGraph.hpp"
 
 namespace {
+    template <typename index_type> auto createGraphData() {
+        using EdgeData = graph::BasicEdgeData<index_type>;
+        std::vector<graph::BasicEdgeData<index_type>> edges = {{0, 1}, {0, 3}, {0, 2}, {1, 3},
+                                                               {1, 4}, {2, 5}, {4, 3}};
+        std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G"};
+        std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
+        return std::make_tuple(edges, labels);
+    }
+
+    // template <typename index_type, typename edge_type>
+    // std::vector<graph::WeightedEdgeData<index_type, edge_type>> createGraphData() {
+    //     using EdgeData = graph::WeightedEdgeData<index_type, edge_type>;
+    //     std::vector<EdgeData> edges = {{1, 2, 3}};
+    //     std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G"};
+    //     std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
+    //     return std::make_tuple(edges, labels);
+    // }
+
     // template <typename EdgeData>
     // std::vector<EdgeData> createGraphData() {
     //     std::vector<EdgeData> edges{
@@ -93,8 +111,28 @@ TEST(WeightedEdgeData, Positive) {
 
 TEST(SparseGraph, Positive) {
     using index_type = size_t;
-    using EdgeData = graph::BasicEdgeData<index_type>;
-    // std::vector<EdgeData> edges = createGraphData<EdgeData>();
+    auto data = createGraphData<index_type>();
+    auto edges = std::get<0>(data);
+    auto labels = std::get<1>(data);
+    using EdgeData = decltype(edges)::value_type;
+
+    EXPECT_TRUE(
+        std::is_sorted(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>()));
+
+    std::stringstream output;
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("Edges", edges), cereal::make_nvp("Labels", labels));
+    }
+
+    // Construct the graph given edge data
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, 6, true);
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("Constructed graph", g));
+    }
+
+    fmt::print("{}\n", output.str());
 }
 
 TEST(Serialization, Positive) {}

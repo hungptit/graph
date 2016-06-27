@@ -77,6 +77,40 @@ namespace graph {
         }
     };
 
+    /**
+     * Define some operators for EdgeData claases.
+     *
+     */
+
+    template <typename index_type>
+    bool operator==(const BasicEdgeData<index_type> &lhs,
+                    const BasicEdgeData<index_type> &rhs) {
+        return lhs.SrcID == rhs.SrcID && lhs.DstID == rhs.DstID;
+    }
+
+    template <typename index_type, typename edge_type>
+    bool operator==(const WeightedEdgeData<index_type, edge_type> &lhs,
+                    const WeightedEdgeData<index_type, edge_type> &rhs) {
+        return lhs.SrcID == rhs.SrcID && lhs.DstID == rhs.DstID && lhs.Weight == rhs.Weight;
+    }
+
+    // Greater comparators
+    template <typename index_type, typename EdgeData> struct Greater;
+
+    template <typename index_type> struct Greater<index_type, BasicEdgeData<index_type>> {
+        bool operator()(BasicEdgeData<index_type> a, BasicEdgeData<index_type> b) {
+            return (a.SrcId > b.SrcId) || ((a.SrcId == b.SrcId) && (a.DstId > b.DstId));
+        }
+    };
+
+    // Less comparators
+    template <typename index_type, typename EdgeData> struct Less;
+    template <typename index_type> struct Less<index_type, BasicEdgeData<index_type>> {
+        bool operator()(BasicEdgeData<index_type> a, BasicEdgeData<index_type> b) {
+            return (a.SrcId < b.SrcId) || ((a.SrcId == b.SrcId) && (a.DstId < b.DstId));
+        }
+    };
+
     // Simple implementation for a graph using CSR format.
     template <typename itype, typename etype> struct SparseGraph {
         using index_type = itype;
@@ -87,8 +121,8 @@ namespace graph {
 
         explicit SparseGraph(const bool isDirected) : IsDirected(isDirected) {}
 
-        explicit SparseGraph(std::vector<std::tuple<index_type, index_type>> &data,
-                             const std::size_t N, const bool isDirected)
+        explicit SparseGraph(std::vector<edge_type> &data, const std::size_t N,
+                             const bool isDirected)
             : IsDirected(isDirected) {
             build(data, N);
         }
@@ -98,14 +132,14 @@ namespace graph {
               Edges(std::move(e)),
               IsDirected(isDirected) {}
 
-        /// This function assume that input data is sorted by vertex ID.
-        void build(std::vector<etype> &data, const std::size_t N) {
+        void build(std::vector<edge_type> &edges, const std::size_t N) {
+            /// This function assume that edges vector is sorted.
+            std::is_sorted(edges.begin(), edges.end(), graph::Less<index_type, edge_type>());
             Vertexes.assign(N + 1, 0);
-            Edges.assign(data.size(), 0);
-            index_type currentRow = 0;
-            for (auto const &val : data) {
+            Edges.reserve(edges.size());
+            for (auto const &val : edges) {
                 Vertexes[val.SrcId + 1]++;
-                Edges[currentRow++] = val;
+                Edges.emplace_back(val);
             }
 
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
