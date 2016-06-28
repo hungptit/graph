@@ -147,12 +147,12 @@ namespace graph {
             }
         }
 
-        bool isDirected() { return IsDirected; };
+        bool isDirected() const { return IsDirected; };
 
-        edge_type getEdge(const index_type eid) { return Edges[eid]; }
+        const edge_type edge(const index_type eid) const { return Edges[eid]; }
 
         std::array<index_type, 2> edges(const index_type vid) const {
-            return {Vertexes[vid], Vertexes[vid + 1]};
+          return {{Vertexes[vid], Vertexes[vid + 1]}};
         }
 
         std::tuple<edge_iterator, edge_iterator> edge_iterators(const index_type vid) const {

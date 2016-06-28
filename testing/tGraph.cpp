@@ -144,7 +144,16 @@ TEST(DFS, Positive) {
     using EdgeData = decltype(edges)::value_type;
 
     std::stringstream output;
+    
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, 6, true);
+    index_type rootVid = 0;
+    auto results = graph::dfs_inorder(g, rootVid);
 
+    {
+      cereal::JSONOutputArchive oar(output);
+      oar(cereal::make_nvp("dfs_inorder", results));
+    }
+    
     fmt::print("{}\n", output.str());
 }
 
