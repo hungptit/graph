@@ -18,8 +18,8 @@ namespace graph {
      * @return
      */
     template <typename Container, typename Graph>
-    std::vector<typename Graph::index_type> dfs(const Graph &g,
-                                                const typename Graph::index_type vid) {
+    std::vector<typename Graph::index_type>
+    dfs_preordering(const Graph &g, const typename Graph::index_type vid) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
@@ -50,18 +50,55 @@ namespace graph {
         return results;
     }
 
-    /** 
+    template <typename Container, typename Graph>
+    std::vector<typename Graph::index_type>
+    dfs_postordering(const Graph &g, const typename Graph::index_type vid) {
+        using index_type = typename Graph::index_type;
+        using EdgeData = typename Graph::edge_type;
+
+        size_t N = g.Vertexes.size() - 1;
+        assert(vid < N);
+
+        Container stack{vid};
+        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        std::vector<typename Graph::index_type> results;
+        results.reserve(N);
+
+        while (!stack.empty()) {
+            index_type currentVid = stack.back();            
+            assert(currentVid < N);
+            if (status[currentVid] == UNDISCOVERED) {
+                index_type const begin = g.Vertexes[currentVid];
+                index_type const end = g.Vertexes[currentVid + 1];
+                status[currentVid] = VISITED;
+                for (index_type eidx = end; eidx > begin;) {
+                    const EdgeData anEdge = g.edge(--eidx);
+                    const index_type childVid = anEdge.DstId;
+                    stack.push_back(childVid);
+                }
+            } else if (status[currentVid] == VISITED) {
+                stack.pop_back();
+                results.push_back(currentVid);
+                status[currentVid] = DISCOVERED;
+            } else {
+                stack.pop_back();
+            }
+        }
+        return results;
+    }
+
+    /**
      * Recursive implementation of the DFS algorithm.
      *
-     * @param g 
-     * @param vid 
-     * @param status 
-     * @param results 
+     * @param g
+     * @param vid
+     * @param status
+     * @param results
      */
     template <typename Graph>
-    void dfs_recursive(const Graph &g, const typename Graph::index_type vid,
-                       std::vector<NodeStatus> &status,
-                       std::vector<typename Graph::index_type> &results) {
+    void dfs_recursive_preordering(const Graph &g, const typename Graph::index_type vid,
+                                   std::vector<NodeStatus> &status,
+                                   std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
@@ -77,9 +114,34 @@ namespace graph {
                 const EdgeData anEdge = g.edge(eidx);
                 const index_type childVid = anEdge.DstId;
                 if (status[childVid] == UNDISCOVERED) {
-                    dfs_recursive(g, childVid, status, results);
+                    dfs_recursive_preordering(g, childVid, status, results);
                 }
             }
+        }
+    }
+
+    template <typename Graph>
+    void dfs_recursive_postordering(const Graph &g, const typename Graph::index_type vid,
+                                    std::vector<NodeStatus> &status,
+                                    std::vector<typename Graph::index_type> &results) {
+        using index_type = typename Graph::index_type;
+        using EdgeData = typename Graph::edge_type;
+
+        size_t N = g.Vertexes.size() - 1;
+        assert(vid < N);
+
+        if (status[vid] == UNDISCOVERED) {
+            index_type const begin = g.Vertexes[vid];
+            index_type const end = g.Vertexes[vid + 1];
+            status[vid] = DISCOVERED;
+            for (index_type eidx = begin; eidx < end; ++eidx) {
+                const EdgeData anEdge = g.edge(eidx);
+                const index_type childVid = anEdge.DstId;
+                if (status[childVid] == UNDISCOVERED) {
+                    dfs_recursive_postordering(g, childVid, status, results);
+                }
+            }
+            results.push_back(vid);
         }
     }
 
