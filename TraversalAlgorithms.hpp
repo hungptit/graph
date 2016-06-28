@@ -5,32 +5,89 @@
 #include <vector>
 
 namespace graph {
-    template <typename Graph>
-    std::vector<typename Graph::index_type> dfs_inorder(const Graph &g,
-                                                        const typename Graph::index_type vid) {
+    enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED };
+    enum NodeColors {BLACK, WHITE};
+
+    /**
+     * Non-recursive implementation of the DFS algorithms
+     *
+     * @param g
+     * @param vid
+     *
+     * @return
+     */
+    template <typename Container, typename Graph>
+    std::vector<typename Graph::index_type> dfs(const Graph &g,
+                                                const typename Graph::index_type vid) {
         using index_type = typename Graph::index_type;
+        using EdgeData = typename Graph::edge_type;
+
         size_t N = g.Vertexes.size() - 1;
-        std::vector<index_type> stack{vid};
-        std::vector<int> visited(N, 0);
-        std::vector<int> processed(N, 0);
+        assert(vid < N);
+
+        Container stack{vid};
+        std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
         results.reserve(N);
+
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            stack.pop_back();
-            std::array<index_type, 2> bound = g.edges(currentVid);
-            fmt::print("currentVid = {0} -> visited = {1} and processed = {2}\n", currentVid,
-                       visited[currentVid], processed[currentVid]);
-            if (!visited[currentVid]) {
-                fmt::print("Visit {}\n", currentVid);
-                for (auto eidx = bound[0]; eidx < bound[1]; ++eidx) {
-                    auto anEdge = g.edge(eidx);
-                    stack.push_back(anEdge.DstId);
+            assert(currentVid < N);
+            stack.pop_back();                       
+
+            index_type const begin = g.Vertexes[currentVid];
+            index_type const end = g.Vertexes[currentVid + 1];
+
+            if (status[currentVid] == UNDISCOVERED) {
+                status[currentVid] = DISCOVERED;
+                for (index_type eidx = begin; eidx < end; ++eidx) {
+                    const EdgeData anEdge = g.edge(eidx);
+                    const index_type childVid = anEdge.DstId;
+                    stack.push_back(childVid);
                 }
-                visited[currentVid] = 1;
-            } else if (!processed[vid]) {
-                fmt::print("Process {}\n", currentVid);
-                processed[currentVid] = 1;
+                results.push_back(currentVid);
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Non-recursive implementation of the BFS algorithms.
+     *
+     * @param g
+     * @param vid
+     *
+     * @return
+     */
+    template <typename Container, typename Graph>
+    std::vector<typename Graph::index_type> bfs(const Graph &g,
+                                                const typename Graph::index_type vid) {
+        using index_type = typename Graph::index_type;
+        using EdgeData = typename Graph::edge_type;
+
+        size_t N = g.Vertexes.size() - 1;
+        assert(vid < N);
+
+        Container stack{vid};
+        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        std::vector<typename Graph::index_type> results;
+        results.reserve(N);
+
+        while (!stack.empty()) {
+            index_type currentVid = stack.front();
+            assert(currentVid < N);
+            stack.pop_front();
+
+            index_type const begin = g.Vertexes[currentVid];
+            index_type const end = g.Vertexes[currentVid + 1];
+
+            if (status[currentVid] == UNDISCOVERED) {
+                status[currentVid] = DISCOVERED;
+                for (index_type eidx = begin; eidx < end; ++eidx) {
+                    const EdgeData anEdge = g.edge(eidx);
+                    const index_type childVid = anEdge.DstId;
+                    stack.push_back(childVid);
+                }
                 results.push_back(currentVid);
             }
         }

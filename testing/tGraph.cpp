@@ -9,15 +9,16 @@
 #include "graph/Operators.hpp"
 #include "graph/SparseGraph.hpp"
 #include "graph/TraversalAlgorithms.hpp"
+#include "graph/Utils.hpp"
 
 namespace {
     template <typename index_type> auto createGraphData() {
         using EdgeData = graph::BasicEdgeData<index_type>;
-        std::vector<graph::BasicEdgeData<index_type>> edges = {{0, 1}, {0, 3}, {0, 2}, {1, 3},
-                                                               {1, 4}, {2, 5}, {4, 3}};
+        std::vector<graph::BasicEdgeData<index_type>> edges = {{0, 1}, {0, 2}, {0, 4}, {1, 3},
+                                                               {1, 5}, {2, 6}, {4, 5}};
         std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G"};
         std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
-        return std::make_tuple(edges, labels);
+        return std::make_tuple(edges, labels, 7);
     }
 
     // template <typename index_type, typename edge_type>
@@ -134,6 +135,17 @@ TEST(SparseGraph, Positive) {
     }
 
     fmt::print("{}\n", output.str());
+
+    // Test edges methods
+    {
+        auto bound = g.edges(0);
+        std::array<index_type, 2> expectedBound{{0, 3}};
+        EXPECT_TRUE(bound == expectedBound);
+    }
+
+    // Generate the dot graph
+    std::string dotFile = "graph.dot";
+    graph::gendot(g, labels, dotFile);
 }
 
 TEST(DFS, Positive) {
@@ -141,22 +153,60 @@ TEST(DFS, Positive) {
     auto data = createGraphData<index_type>();
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
+    auto N = std::get<2>(data);
+
     using EdgeData = decltype(edges)::value_type;
 
     std::stringstream output;
-    
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, 6, true);
+
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
     index_type rootVid = 0;
-    auto results = graph::dfs_inorder(g, rootVid);
+    auto vids = graph::dfs<std::vector<index_type>>(g, rootVid);
+    std::vector<std::string> results;
+    for (auto vid : vids) {
+        results.push_back(labels[vid]);
+    }
+
+    std::vector<std::string> expectedResults{"A", "E", "F", "C", "G", "B", "D"};
+    EXPECT_EQ(expectedResults, results);
 
     {
-      cereal::JSONOutputArchive oar(output);
-      oar(cereal::make_nvp("dfs_inorder", results));
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("dfs results", results));
     }
-    
+
     fmt::print("{}\n", output.str());
 }
 
+TEST(BFS, Positive) {
+    using index_type = size_t;
+    auto data = createGraphData<index_type>();
+    auto edges = std::get<0>(data);
+    auto labels = std::get<1>(data);
+    auto N = std::get<2>(data);
+
+    using EdgeData = decltype(edges)::value_type;
+
+    std::stringstream output;
+
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
+    index_type rootVid = 0;
+    auto vids = graph::bfs<std::deque<index_type>>(g, rootVid);
+    std::vector<std::string> results;
+    for (auto vid : vids) {
+        results.push_back(labels[vid]);
+    }
+
+    std::vector<std::string> expectedResults{"A", "B", "C", "E", "D", "F", "G"};
+    EXPECT_EQ(expectedResults, results);
+
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("dfs results", results));
+    }
+
+    fmt::print("{}\n", output.str());
+}
 
 TEST(Serialization, Positive) {}
 

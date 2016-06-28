@@ -5,29 +5,6 @@
 #include "Operators.hpp"
 
 namespace graph {
-    // Utilty functions    
-    template <typename Graph, typename Writer>
-    void graph_info(Graph &g, Writer &writer) {
-        auto vertexes = g.vertexData();
-        auto edges = g.outEdgeData();
-        auto N = vertexes.size() - 1;
-        for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
-            auto begin = vertexes[currentCol];
-            auto end = vertexes[currentCol + 1];
-            writer << "Vetex[" << currentCol << "]: Edges = {";
-
-            if (begin != end) {
-                writer << edges[begin];
-                begin++;
-            }
-
-            for (auto idx = begin; idx < end; ++idx) {
-                writer << "," << edges[idx];
-            }
-            writer << "}\n";
-        }
-    }
-
     /// Write input graph information to a dot file.
     template <typename Graph, typename Writer = std::stringstream>
     void gendot(Graph &g, std::vector<std::string> &v,
@@ -45,17 +22,14 @@ namespace graph {
             i++;
         }
 
-        auto vertexes = g.vertexData();
-        auto edges = g.outEdgeData();
-
         // Write edge's' information
-        const std::string direction = g.isDirected() ? "->" : "--";
-        std::size_t N = vertexes.size() - 1;
+        const std::string direction = g.IsDirected ? "->" : "--";
+        std::size_t N = g.Vertexes.size() - 1;
         for (std::size_t vid = 0; vid < N; ++vid) {
-            auto begin = vertexes[vid];
-            auto end = vertexes[vid + 1];
+            auto begin = g.Vertexes[vid];
+            auto end = g.Vertexes[vid + 1];
             for (auto it = begin; it != end; ++it) {
-                writer << "\t" << vid << direction << edges[it] << "\n";
+                writer << "\t" << vid << direction << g.Edges[it].DstId << "\n";
             }
         }
 
@@ -71,18 +45,6 @@ namespace graph {
     void viewdot(const std::string &dotFile) {
         const std::string cmd = "dot -Txlib " + dotFile;
         std::system(cmd.c_str());
-    }
-
-    template <typename Graph, typename Writer = std::stringstream>
-    void tree_info(const Graph &g, std::vector<std::string> &vids) {
-        graph_info(g);
-        Writer writer;
-        size_t counter = 0;
-        for (auto item : vids) {
-            writer << "vid[" << counter << "] = " << item << "\n";
-            counter++;
-        }
-        std::cout << writer.str();
     }
 }
 
