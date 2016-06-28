@@ -8,6 +8,7 @@
 #include "graph/DataStructures.hpp"
 #include "graph/Operators.hpp"
 #include "graph/SparseGraph.hpp"
+#include "graph/TraversalAlgorithms.hpp"
 
 namespace {
     template <typename index_type> auto createGraphData() {
@@ -134,6 +135,19 @@ TEST(SparseGraph, Positive) {
 
     fmt::print("{}\n", output.str());
 }
+
+TEST(DFS, Positive) {
+    using index_type = size_t;
+    auto data = createGraphData<index_type>();
+    auto edges = std::get<0>(data);
+    auto labels = std::get<1>(data);
+    using EdgeData = decltype(edges)::value_type;
+
+    std::stringstream output;
+
+    fmt::print("{}\n", output.str());
+}
+
 
 TEST(Serialization, Positive) {}
 
