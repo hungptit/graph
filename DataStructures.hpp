@@ -123,8 +123,6 @@ namespace graph {
 
         explicit SparseGraph() : Vertexes(), Edges(), IsDirected() {}
 
-        explicit SparseGraph(const bool isDirected) : IsDirected(isDirected) {}
-
         explicit SparseGraph(std::vector<edge_type> &data, const std::size_t N,
                              const bool isDirected)
             : IsDirected(isDirected) {

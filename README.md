@@ -1,5 +1,5 @@
 # graph
-This is a basic graph library that uses Column Sparse Row (CSR) format to store the graph information. graph provides below features:
-* Written using modern C++ features.
-* Provide very fast serialization/deserialization functionality using cereal and leveldb. graph can output or display the data in different data format such as JSON or XML.
-* Provide implementation for some basic graph algorithms such as DFS, BFS, connected components etc.
+This is a simple graph library that is written in modern C++. **graph** uses [Column Sparse Row (CSR)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_.28CSR.2C_CRS_or_Yale_format.29) format to store the graph information and it provides the following features:
+* Support fast serialization/deserialization using cereal and leveldb.
+* Display the graph information in JSON or XML formats.
+* Implementation for some basic recursive and non-recursimve graph algorithms traversal algorithms such as DFS, BFS etc.
