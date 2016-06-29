@@ -36,8 +36,8 @@ namespace graph {
             assert(currentVid < N);
             stack.pop_back();
             if (status[currentVid] == UNDISCOVERED) {
-                index_type const begin = g.Vertexes[currentVid];
-                index_type const end = g.Vertexes[currentVid + 1];
+                index_type const begin = g.begin(currentVid);
+                index_type const end = g.end(currentVid);
                 status[currentVid] = DISCOVERED;
                 for (index_type eidx = end; eidx > begin;) {
                     const EdgeData anEdge = g.edge(--eidx);
@@ -67,21 +67,23 @@ namespace graph {
         while (!stack.empty()) {
             index_type currentVid = stack.back();
             assert(currentVid < N);
+            
             if (status[currentVid] == UNDISCOVERED) {
-                index_type const begin = g.Vertexes[currentVid];
-                index_type const end = g.Vertexes[currentVid + 1];
+                index_type const begin = g.begin(currentVid);
+                index_type const end = g.end(currentVid);
                 status[currentVid] = VISITED;
                 for (index_type eidx = end; eidx > begin;) {
                     const EdgeData anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
                     stack.push_back(childVid);
                 }
-            } else if (status[currentVid] == VISITED) {
-                stack.pop_back();
+                continue;
+            } 
+            
+            stack.pop_back();
+            if (status[currentVid] == VISITED) {
                 results.push_back(currentVid);
                 status[currentVid] = DISCOVERED;
-            } else {
-                stack.pop_back();
             }
         }
         return results;

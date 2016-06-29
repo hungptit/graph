@@ -31,6 +31,8 @@ namespace graph {
         index_type SrcId;
         index_type DstId;
 
+        BasicEdgeData() {}
+
         BasicEdgeData(const index_type srcId, const index_type dstId)
             : SrcId(srcId), DstId(dstId) {}
 
@@ -85,13 +87,13 @@ namespace graph {
     template <typename index_type>
     bool operator==(const BasicEdgeData<index_type> &lhs,
                     const BasicEdgeData<index_type> &rhs) {
-        return lhs.SrcID == rhs.SrcID && lhs.DstID == rhs.DstID;
+        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId;
     }
 
     template <typename index_type, typename edge_type>
     bool operator==(const WeightedEdgeData<index_type, edge_type> &lhs,
                     const WeightedEdgeData<index_type, edge_type> &rhs) {
-        return lhs.SrcID == rhs.SrcID && lhs.DstID == rhs.DstID && lhs.Weight == rhs.Weight;
+        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId && lhs.Weight == rhs.Weight;
     }
 
     // Greater comparators
@@ -118,6 +120,8 @@ namespace graph {
         using edge_container = std::vector<edge_type>;
         using vertex_container = std::vector<index_type>;
         using edge_iterator = typename edge_container::const_iterator;
+
+        explicit SparseGraph() : Vertexes(), Edges(), IsDirected() {}
 
         explicit SparseGraph(const bool isDirected) : IsDirected(isDirected) {}
 
@@ -148,17 +152,9 @@ namespace graph {
         }
 
         bool isDirected() const { return IsDirected; };
-
+        const index_type begin(const index_type vid) const { return Vertexes[vid]; }
+        const index_type end(const index_type vid) const { return Vertexes[vid + 1]; }
         const edge_type edge(const index_type eid) const { return Edges[eid]; }
-
-        std::array<index_type, 2> edges(const index_type vid) const {
-          return {{Vertexes[vid], Vertexes[vid + 1]}};
-        }
-
-        std::tuple<edge_iterator, edge_iterator> edge_iterators(const index_type vid) const {
-            return std::make_tuple(std::advance(Edges.begin(), Vertexes[vid]),
-                                   std::advance(Edges.begin(), Vertexes[vid + 1]));
-        }
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("IsDirected", IsDirected),
@@ -168,8 +164,15 @@ namespace graph {
         // Graph data
         std::vector<index_type> Vertexes;
         std::vector<edge_type> Edges;
-        const bool IsDirected;
+        bool IsDirected;
     };
+
+    template <typename index_type, typename edge_type>
+    bool operator==(const SparseGraph<index_type, edge_type> &lhs,
+                    const SparseGraph<index_type, edge_type> &rhs) {
+        return lhs.Vertexes == rhs.Vertexes && lhs.Edges == rhs.Edges &&
+               lhs.IsDirected == rhs.IsDirected;
+    }
 }
 
 #endif
