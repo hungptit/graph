@@ -11,52 +11,7 @@
 #include "graph/TraversalAlgorithms.hpp"
 #include "graph/Utils.hpp"
 
-namespace {
-    template <typename index_type> auto createGraphData() {
-        using EdgeData = graph::BasicEdgeData<index_type>;
-        std::vector<graph::BasicEdgeData<index_type>> edges = {{0, 1}, {0, 2}, {0, 4}, {1, 3},
-                                                               {1, 5}, {2, 6}, {4, 5}};
-        std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G"};
-        std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
-        return std::make_tuple(edges, labels, 7);
-    }
-
-    // template <typename index_type, typename edge_type>
-    // std::vector<graph::WeightedEdgeData<index_type, edge_type>> createGraphData() {
-    //     using EdgeData = graph::WeightedEdgeData<index_type, edge_type>;
-    //     std::vector<EdgeData> edges = {{1, 2, 3}};
-    //     std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G"};
-    //     std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
-    //     return std::make_tuple(edges, labels);
-    // }
-
-    // template <typename EdgeData>
-    // std::vector<EdgeData> createGraphData() {
-    //     std::vector<EdgeData> edges{
-    //         EdgeData(0, 1), EdgeData(0, 2), EdgeData(2, 2),
-    //         EdgeData(0, 3), EdgeData(1, 4), EdgeData(2, 5),
-    //         EdgeData(5, 7), EdgeData(3, 5), EdgeData(3, 6),
-    //         EdgeData(4, 7), EdgeData(6, 4), EdgeData(6, 1),
-    //         EdgeData(7, 6)};
-    //     std::sort(edges.begin(), edges.end());
-    //     return edges;
-    // }
-
-    // template <typename EdgeData>
-    // std::vector<EdgeData> dag_graph() {
-    //     std::vector<EdgeData> edges{
-    //         EdgeData(0, 1), EdgeData(1, 3), EdgeData(1, 6),
-    //         EdgeData(2, 0), EdgeData(3, 4), EdgeData(3, 5),
-    //         EdgeData(4, 5), EdgeData(5, 6), EdgeData(2, 4),
-    //         EdgeData(0, 3), EdgeData(2, 7)};
-    //     std::sort(edges.begin(), edges.end());
-    //     return edges;
-    // }
-
-    // std::vector<std::string> get_vertex_ids() {
-    //     return std::vector<std::string>{"0", "1", "2", "3", "4", "5", "6", "7"};
-    // }
-}
+#include "Data.hpp"
 
 TEST(BasicEdgeData, Positive) {
     using index_type = size_t;
@@ -113,7 +68,7 @@ TEST(WeightedEdgeData, Positive) {
 
 TEST(SparseGraph, Positive) {
     using index_type = size_t;
-    auto data = createGraphData<index_type>();
+    auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     using EdgeData = decltype(edges)::value_type;
@@ -148,165 +103,6 @@ TEST(SparseGraph, Positive) {
     graph::gendot(g, labels, dotFile);
 }
 
-TEST(dfs_preordering, Positive) {
-    using index_type = size_t;
-    auto data = createGraphData<index_type>();
-    auto edges = std::get<0>(data);
-    auto labels = std::get<1>(data);
-    auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
-    std::stringstream output;
-
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    index_type rootVid = 0;
-    auto vids = graph::dfs_preordering<std::vector<index_type>>(g, rootVid);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    std::vector<std::string> expectedResults{"A", "B", "D", "F", "C", "G", "E"};
-    EXPECT_EQ(expectedResults, results);
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("dfs results", results));
-    }
-
-    fmt::print("{}\n", output.str());
-}
-
-TEST(dfs_postordering, Positive) {
-    using index_type = size_t;
-    auto data = createGraphData<index_type>();
-    auto edges = std::get<0>(data);
-    auto labels = std::get<1>(data);
-    auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
-    std::stringstream output;
-
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    index_type rootVid = 0;
-    auto vids = graph::dfs_postordering<std::vector<index_type>>(g, rootVid);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    std::vector<std::string> expectedResults{"A", "B", "D", "F", "C", "G", "E"};
-    EXPECT_EQ(expectedResults, results);
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("dfs results", results));
-    }
-
-    fmt::print("{}\n", output.str());
-}
-
-TEST(dfs_recursive_preordering, Positive) {
-    using index_type = size_t;
-    auto data = createGraphData<index_type>();
-    auto edges = std::get<0>(data);
-    auto labels = std::get<1>(data);
-    auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
-    std::stringstream output;
-
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    index_type rootVid = 0;
-
-    std::vector<graph::NodeStatus> status(N, graph::UNDISCOVERED);
-    std::vector<index_type> vids;
-    vids.reserve(N);
-
-    graph::dfs_recursive_preordering(g, rootVid, status, vids);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    std::vector<std::string> expectedResults{"A", "B", "D", "F", "C", "G", "E"};
-    EXPECT_EQ(expectedResults, results);
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("dfs_recursive results", results));
-    }
-
-    fmt::print("{}\n", output.str());
-}
-
-TEST(dfs_recursive_postordering, Positive) {
-    using index_type = size_t;
-    auto data = createGraphData<index_type>();
-    auto edges = std::get<0>(data);
-    auto labels = std::get<1>(data);
-    auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
-    std::stringstream output;
-
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    index_type rootVid = 0;
-
-    std::vector<graph::NodeStatus> status(N, graph::UNDISCOVERED);
-    std::vector<index_type> vids;
-    vids.reserve(N);
-
-    graph::dfs_recursive_postordering(g, rootVid, status, vids);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    std::vector<std::string> expectedResults{"A", "B", "D", "F", "C", "G", "E"};
-    EXPECT_EQ(expectedResults, results);
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("dfs_recursive_postordering results", results));
-    }
-
-    fmt::print("{}\n", output.str());
-}
-
-TEST(BFS, Positive) {
-    using index_type = size_t;
-    auto data = createGraphData<index_type>();
-    auto edges = std::get<0>(data);
-    auto labels = std::get<1>(data);
-    auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
-    std::stringstream output;
-
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    index_type rootVid = 0;
-    auto vids = graph::bfs<std::deque<index_type>>(g, rootVid);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    std::vector<std::string> expectedResults{"A", "B", "C", "E", "D", "F", "G"};
-    EXPECT_EQ(expectedResults, results);
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("dfs results", results));
-    }
-
-    fmt::print("{}\n", output.str());
-}
 
 TEST(Serialization, Positive) {}
 
