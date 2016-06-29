@@ -22,13 +22,13 @@ namespace graph {
         }
 
         // Write edge's' information
-        const std::string direction = g.IsDirected ? "->" : "--";
-        std::size_t N = g.Vertexes.size() - 1;
+        const std::string direction = g.isDirected() ? "->" : "--";
+        std::size_t N = g.numberOfVertexes();
         for (std::size_t vid = 0; vid < N; ++vid) {
-            auto begin = g.Vertexes[vid];
-            auto end = g.Vertexes[vid + 1];
+            auto begin = g.begin(vid);
+            auto end = g.end(vid);
             for (auto it = begin; it != end; ++it) {
-                writer << "\t" << vid << direction << g.Edges[it].DstId << "\n";
+                writer << "\t" << vid << direction << g.edge(it).DstId << "\n";
             }
         }
 

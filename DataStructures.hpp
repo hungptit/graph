@@ -153,13 +153,18 @@ namespace graph {
         const index_type begin(const index_type vid) const { return Vertexes[vid]; }
         const index_type end(const index_type vid) const { return Vertexes[vid + 1]; }
         const edge_type edge(const index_type eid) const { return Edges[eid]; }
+        size_t numberOfVertexes() const { return Vertexes.size() - 1; }
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("IsDirected", IsDirected),
                cereal::make_nvp("Vertexes", Vertexes), cereal::make_nvp("Edges", Edges));
         }
 
-        // Graph data
+        template <typename index_type, typename edge_type>
+        friend bool operator==(const SparseGraph<index_type, edge_type> &lhs,
+                               const SparseGraph<index_type, edge_type> &rhs);
+
+      private:
         std::vector<index_type> Vertexes;
         std::vector<edge_type> Edges;
         bool IsDirected;

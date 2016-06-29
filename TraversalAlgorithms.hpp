@@ -23,7 +23,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.Vertexes.size() - 1;
+        size_t N = g.numberOfVertexes();
         assert(vid < N);
 
         Container stack{vid};
@@ -56,7 +56,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.Vertexes.size() - 1;
+        size_t N = g.numberOfVertexes();
         assert(vid < N);
 
         Container stack{vid};
@@ -104,12 +104,12 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.Vertexes.size() - 1;
+        size_t N = g.numberOfVertexes();
         assert(vid < N);
 
         if (status[vid] == UNDISCOVERED) {
-            index_type const begin = g.Vertexes[vid];
-            index_type const end = g.Vertexes[vid + 1];
+            index_type const begin = g.begin(vid);
+            index_type const end = g.end(vid);
             status[vid] = DISCOVERED;
             results.push_back(vid);
             for (index_type eidx = begin; eidx < end; ++eidx) {
@@ -129,12 +129,12 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.Vertexes.size() - 1;
+        size_t N = g.numberOfVertexes();
         assert(vid < N);
 
         if (status[vid] == UNDISCOVERED) {
-            index_type const begin = g.Vertexes[vid];
-            index_type const end = g.Vertexes[vid + 1];
+            index_type const begin = g.begin(vid);
+            index_type const end = g.end(vid);
             status[vid] = DISCOVERED;
             for (index_type eidx = begin; eidx < end; ++eidx) {
                 const EdgeData anEdge = g.edge(eidx);
@@ -161,7 +161,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.Vertexes.size() - 1;
+        size_t N = g.numberOfVertexes();
         assert(vid < N);
 
         Container stack{vid};
@@ -174,8 +174,8 @@ namespace graph {
             assert(currentVid < N);
             stack.pop_front();
 
-            index_type const begin = g.Vertexes[currentVid];
-            index_type const end = g.Vertexes[currentVid + 1];
+            index_type const begin = g.begin(currentVid);
+            index_type const end = g.end(currentVid);
 
             if (status[currentVid] == UNDISCOVERED) {
                 status[currentVid] = DISCOVERED;
