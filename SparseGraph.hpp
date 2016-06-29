@@ -40,7 +40,7 @@
 #include "cereal/types/vector.hpp"
 
 #include "DataStructures.hpp"
-#include "Operators.hpp"
+#include "TraversalAlgorithms.hpp"
 #include "Utils.hpp"
 
 #endif

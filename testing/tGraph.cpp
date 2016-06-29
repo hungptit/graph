@@ -5,12 +5,7 @@
 
 #include "fmt/format.h"
 
-#include "graph/DataStructures.hpp"
-#include "graph/Operators.hpp"
 #include "graph/SparseGraph.hpp"
-#include "graph/TraversalAlgorithms.hpp"
-#include "graph/Utils.hpp"
-
 #include "Data.hpp"
 
 namespace {

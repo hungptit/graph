@@ -2,7 +2,6 @@
 #define Utils_hpp
 
 #include "DataStructures.hpp"
-#include "Operators.hpp"
 
 namespace graph {
     /// Write input graph information to a dot file.
