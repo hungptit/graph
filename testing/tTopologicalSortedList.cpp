@@ -22,13 +22,21 @@ TEST(dfs_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{"A", "B", "C", "D", "E", "F", "G"};
+    std::vector<std::string> expectedResults{"C", "B", "E", "A", "D", "I", "H", "G", "F"};
     EXPECT_EQ(expectedResults, results);
 
     {
         cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("topological sorted list", results));
+        oar(cereal::make_nvp("topological sorted list", vids));
     }
 
     fmt::print("{}\n", output.str());
+
+    // std::vector<std::string> newLabels(N, "");
+    // for (auto idx = 0; idx < N; ++idx) {
+    //     newLabels[idx] = std::to_string(idx);
+    // }
+
+    std::string dotFile = "topological_sorted_list_graph.dot";
+    graph::gendot(g, labels, dotFile);
 }

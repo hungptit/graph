@@ -40,8 +40,9 @@
 #include "cereal/types/vector.hpp"
 
 #include "DataStructures.hpp"
-#include "TraversalAlgorithms.hpp"
 #include "TopologicalSortedList.hpp"
 #include "Utils.hpp"
+#include "DFS.hpp"
+#include "BFS.hpp"
 
 #endif

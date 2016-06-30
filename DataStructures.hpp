@@ -27,7 +27,7 @@
 #include <algorithm>
 
 namespace graph {
-    enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED };
+    enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
     enum NodeColors { BLACK, WHITE };
 
     template <typename index_type> struct BasicEdgeData {
