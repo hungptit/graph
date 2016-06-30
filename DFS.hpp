@@ -48,8 +48,9 @@ namespace graph {
     }
 
     template <typename Container, typename Graph>
-    std::vector<typename Graph::index_type>
-    dfs_postordering(const Graph &g, const typename Graph::index_type vid) {
+    void dfs_postordering_back(const Graph &g, const typename Graph::index_type vid,
+                               std::vector<NodeStatus> &status,
+                               std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
@@ -57,14 +58,11 @@ namespace graph {
         assert(vid < N);
 
         Container stack{vid};
-        std::vector<NodeStatus> status(N, UNDISCOVERED);
-        std::vector<typename Graph::index_type> results;
-        results.reserve(N);
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
             assert(currentVid < N);
-            
+
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
@@ -75,14 +73,89 @@ namespace graph {
                     stack.push_back(childVid);
                 }
                 continue;
-            } 
-            
+            }
+
             stack.pop_back();
             if (status[currentVid] == VISITED) {
                 results.push_back(currentVid);
                 status[currentVid] = DISCOVERED;
             }
         }
+    }
+
+    template <typename Container, typename Graph>
+    void dfs_postordering_front(const Graph &g, const typename Graph::index_type vid,
+                                std::vector<NodeStatus> &status,
+                                std::deque<typename Graph::index_type> &results) {
+        using index_type = typename Graph::index_type;
+        using EdgeData = typename Graph::edge_type;
+
+        size_t N = g.numberOfVertexes();
+        assert(vid < N);
+
+        Container stack{vid};
+
+        while (!stack.empty()) {
+            index_type currentVid = stack.back();
+            assert(currentVid < N);
+
+            if (status[currentVid] == UNDISCOVERED) {
+                index_type const begin = g.begin(currentVid);
+                index_type const end = g.end(currentVid);
+                status[currentVid] = VISITED;
+                for (index_type eidx = end; eidx > begin;) {
+                    const EdgeData anEdge = g.edge(--eidx);
+                    const index_type childVid = anEdge.DstId;
+                    stack.push_back(childVid);
+                }
+                continue;
+            }
+
+            stack.pop_back();
+            if (status[currentVid] == VISITED) {
+                results.push_front(currentVid);
+                status[currentVid] = DISCOVERED;
+            }
+        }
+    }
+
+    template <typename Container, typename Graph>
+    std::vector<typename Graph::index_type>
+    dfs_postordering(const Graph &g, const typename Graph::index_type vid) {
+        using index_type = typename Graph::index_type;
+        size_t N = g.numberOfVertexes();
+        assert(vid < N);
+
+        Container stack{vid};
+        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        std::vector<typename Graph::index_type> results;
+        results.reserve(N);
+
+        dfs_postordering_back<Container>(g, vid, status, results);
+
+        // using EdgeData = typename Graph::edge_type;
+        // while (!stack.empty()) {
+        //     index_type currentVid = stack.back();
+        //     assert(currentVid < N);
+
+        //     if (status[currentVid] == UNDISCOVERED) {
+        //         index_type const begin = g.begin(currentVid);
+        //         index_type const end = g.end(currentVid);
+        //         status[currentVid] = VISITED;
+        //         for (index_type eidx = end; eidx > begin;) {
+        //             const EdgeData anEdge = g.edge(--eidx);
+        //             const index_type childVid = anEdge.DstId;
+        //             stack.push_back(childVid);
+        //         }
+        //         continue;
+        //     }
+
+        //     stack.pop_back();
+        //     if (status[currentVid] == VISITED) {
+        //         results.push_back(currentVid);
+        //         status[currentVid] = DISCOVERED;
+        //     }
+        // }
         return results;
     }
 

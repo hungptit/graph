@@ -16,7 +16,7 @@ TEST(dfs_preordering, Positive) {
     auto N = std::get<2>(data);
     std::stringstream output;
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
-    auto vids = graph::topological_sorted_list(g);
+    auto vids = graph::topological_sorted_list<std::vector<index_type>>(g);
     std::vector<std::string> results;
     for (auto vid : vids) {
         results.push_back(labels[vid]);
@@ -31,11 +31,6 @@ TEST(dfs_preordering, Positive) {
     }
 
     fmt::print("{}\n", output.str());
-
-    // std::vector<std::string> newLabels(N, "");
-    // for (auto idx = 0; idx < N; ++idx) {
-    //     newLabels[idx] = std::to_string(idx);
-    // }
 
     std::string dotFile = "topological_sorted_list_graph.dot";
     graph::gendot(g, labels, dotFile);
