@@ -41,6 +41,7 @@
 
 #include "DataStructures.hpp"
 #include "TraversalAlgorithms.hpp"
+#include "TopologicalSortedList.hpp"
 #include "Utils.hpp"
 
 #endif

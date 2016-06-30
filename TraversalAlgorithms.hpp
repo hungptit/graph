@@ -6,9 +6,6 @@
 #include <vector>
 
 namespace graph {
-    enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED };
-    enum NodeColors { BLACK, WHITE };
-
     /**
      * Non-recursive implementation of the DFS algorithms
      *
