@@ -14,11 +14,7 @@ TEST(dfs_preordering, Positive) {
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
     std::stringstream output;
-
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
     index_type rootVid = 0;
     auto vids = graph::dfs_preordering<std::vector<index_type>>(g, rootVid);
@@ -44,9 +40,6 @@ TEST(dfs_postordering, Positive) {
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
     std::stringstream output;
 
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
@@ -74,9 +67,6 @@ TEST(dfs_recursive_preordering, Positive) {
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
     std::stringstream output;
 
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
@@ -109,9 +99,6 @@ TEST(dfs_recursive_postordering, Positive) {
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     auto N = std::get<2>(data);
-
-    using EdgeData = decltype(edges)::value_type;
-
     std::stringstream output;
 
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);

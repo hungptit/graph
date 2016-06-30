@@ -8,7 +8,7 @@
 #include "Data.hpp"
 #include "graph/SparseGraph.hpp"
 
-TEST(dfs_preordering, Positive) {
+TEST(use_dfs_postordering, Positive) {
     using index_type = size_t;
     auto data = topologicalSortedListGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -35,3 +35,32 @@ TEST(dfs_preordering, Positive) {
     std::string dotFile = "topological_sorted_list_graph.dot";
     graph::gendot(g, labels, dotFile);
 }
+
+TEST(use_dfs_postordering_neg, Negative) {
+    using index_type = size_t;
+    auto data = topologicalSortedListGraphWithLoop<index_type>();
+    auto edges = std::get<0>(data);
+    auto labels = std::get<1>(data);
+    auto N = std::get<2>(data);
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
+    std::string dotFile = "topological_sorted_list_graph_with_loop.dot";
+    graph::gendot(g, labels, dotFile);
+    std::stringstream output;
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("A directed graph with loop", g));
+    }
+
+    auto vids = graph::topological_sorted_list<std::vector<index_type>>(g);
+    std::vector<std::string> results;
+    for (auto vid : vids) {
+        results.push_back(labels[vid]);
+    }
+
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("vids", results));
+    }
+    fmt::print("{}\n", output.str());
+}
+

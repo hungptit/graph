@@ -26,7 +26,7 @@ namespace graph {
         std::deque<index_type> results;
         std::vector<NodeStatus> status(N, UNDISCOVERED);
 
-        // Push all nodes that do not have any children into results.
+        // TODO: Only push independent nodes into results.
         for (index_type vid = 0; vid < N; ++vid) {
             if (g.begin(vid) == g.end(vid)) {
                 results.push_front(vid);

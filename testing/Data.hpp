@@ -25,6 +25,15 @@ namespace {
         std::sort(edges.begin(), edges.end(), graph::Less<index_type, edge_type>());
         return std::make_tuple(edges, labels, 9);
     }
+
+    template <typename index_type> auto topologicalSortedListGraphWithLoop() {
+        using edge_type = graph::BasicEdgeData<index_type>;
+        std::vector<graph::BasicEdgeData<index_type>> edges = {
+            {0, 3}, {1, 3}, {1, 4}, {2, 4}, {3, 5}, {3, 6}, {4, 6}, {3, 7}, {2, 7}, {7, 1}};
+        std::vector<std::string> labels = {"A", "B", "C", "D", "E", "F", "G", "H", "I"};
+        std::sort(edges.begin(), edges.end(), graph::Less<index_type, edge_type>());
+        return std::make_tuple(edges, labels, 9);
+    }
 }
 
 #endif

@@ -16,8 +16,6 @@ namespace {
         auto edges = std::get<0>(data);
         auto labels = std::get<1>(data);
         auto N = std::get<2>(data);
-        using EdgeData = decltype(edges)::value_type;
-
         std::stringstream output;
 
         // Serialize graph data to the output string stream

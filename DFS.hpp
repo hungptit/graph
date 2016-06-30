@@ -125,37 +125,10 @@ namespace graph {
         using index_type = typename Graph::index_type;
         size_t N = g.numberOfVertexes();
         assert(vid < N);
-
-        Container stack{vid};
         std::vector<NodeStatus> status(N, UNDISCOVERED);
-        std::vector<typename Graph::index_type> results;
+        std::vector<index_type> results;
         results.reserve(N);
-
         dfs_postordering_back<Container>(g, vid, status, results);
-
-        // using EdgeData = typename Graph::edge_type;
-        // while (!stack.empty()) {
-        //     index_type currentVid = stack.back();
-        //     assert(currentVid < N);
-
-        //     if (status[currentVid] == UNDISCOVERED) {
-        //         index_type const begin = g.begin(currentVid);
-        //         index_type const end = g.end(currentVid);
-        //         status[currentVid] = VISITED;
-        //         for (index_type eidx = end; eidx > begin;) {
-        //             const EdgeData anEdge = g.edge(--eidx);
-        //             const index_type childVid = anEdge.DstId;
-        //             stack.push_back(childVid);
-        //         }
-        //         continue;
-        //     }
-
-        //     stack.pop_back();
-        //     if (status[currentVid] == VISITED) {
-        //         results.push_back(currentVid);
-        //         status[currentVid] = DISCOVERED;
-        //     }
-        // }
         return results;
     }
 
