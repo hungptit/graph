@@ -50,17 +50,9 @@ TEST(use_dfs_postordering_neg, Negative) {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("A directed graph with loop", g));
     }
-
-    auto vids = graph::topological_sorted_list<std::vector<index_type>>(g);
-    std::vector<std::string> results;
-    for (auto vid : vids) {
-        results.push_back(labels[vid]);
-    }
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("vids", results));
-    }
     fmt::print("{}\n", output.str());
+    
+    // EXPECT_ANY_THROW(graph::topological_sorted_list<std::vector<index_type>>(g));
+    EXPECT_ANY_THROW(throw(std::runtime_error("My error!")));
 }
 

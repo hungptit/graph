@@ -79,10 +79,13 @@ namespace graph {
             if (status[currentVid] == VISITED) {
                 results.push_back(currentVid);
                 status[currentVid] = DISCOVERED;
+            } else {
+                // There is a loop in a given graph.
             }
         }
     }
 
+    // This function assume that a given graph is DAG.
     template <typename Container, typename Graph>
     void dfs_postordering_front(const Graph &g, const typename Graph::index_type vid,
                                 std::vector<NodeStatus> &status,
@@ -115,6 +118,8 @@ namespace graph {
             if (status[currentVid] == VISITED) {
                 results.push_front(currentVid);
                 status[currentVid] = DISCOVERED;
+            } else {
+                throw(std::runtime_error("Found a loop in a given graph"));
             }
         }
     }
