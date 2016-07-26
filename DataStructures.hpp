@@ -9,24 +9,16 @@
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/archives/xml.hpp"
 #include "cereal/types/array.hpp"
-#include "cereal/types/bitset.hpp"
-#include "cereal/types/chrono.hpp"
-#include "cereal/types/complex.hpp"
 #include "cereal/types/deque.hpp"
-#include "cereal/types/forward_list.hpp"
-#include "cereal/types/queue.hpp"
-#include "cereal/types/set.hpp"
 #include "cereal/types/string.hpp"
 #include "cereal/types/tuple.hpp"
-#include "cereal/types/unordered_map.hpp"
-#include "cereal/types/unordered_set.hpp"
-#include "cereal/types/utility.hpp"
-#include "cereal/types/valarray.hpp"
 #include "cereal/types/vector.hpp"
 
 #include <algorithm>
 
 namespace graph {
+
+    // Definition for basic edge data that only have the indexes of the source and destination.
     template <typename index_type> struct BasicEdgeData {
         index_type SrcId;
         index_type DstId;
@@ -38,19 +30,16 @@ namespace graph {
 
         BasicEdgeData(const BasicEdgeData &data) : SrcId(data.SrcId), DstId(data.DstId){};
 
-        BasicEdgeData(BasicEdgeData &&data) : SrcId(data.SrcId), DstId(data.DstId){};
+        template <typename T> BasicEdgeData(T &&data) : SrcId(data.SrcId), DstId(data.DstId){};
 
-        BasicEdgeData &operator=(BasicEdgeData rhs) {
-            std::swap(SrcId, rhs.SrcId);
-            std::swap(DstId, rhs.DstId);
-            return *this;
-        }
+        BasicEdgeData &operator=(const BasicEdgeData &) = default;
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId));
         }
     };
 
+    // Definition for the weighted edge data
     template <typename index_type, typename weight_type> struct WeightedEdgeData {
         index_type SrcId;
         index_type DstId;
@@ -66,12 +55,7 @@ namespace graph {
         WeightedEdgeData(WeightedEdgeData &&data)
             : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
 
-        WeightedEdgeData &operator=(WeightedEdgeData rhs) {
-            std::swap(SrcId, rhs.SrcId);
-            std::swap(DstId, rhs.DstId);
-            std::swap(Weight, rhs.Weight);
-            return *this;
-        }
+        WeightedEdgeData &operator=(const WeightedEdgeData &rhs) = default;
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId),
@@ -80,7 +64,7 @@ namespace graph {
     };
 
     /**
-     * Define some operators for EdgeData claases.
+     * Define some operators for EdgeData classes.
      *
      */
 
@@ -130,20 +114,22 @@ namespace graph {
         }
 
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
-            : Vertexes(std::move(v)),
-              Edges(std::move(e)),
-              IsDirected(isDirected) {}
+            : Vertexes(std::move(v)), Edges(std::move(e)), IsDirected(isDirected) {}
 
-        void build(std::vector<edge_type> &edges, const std::size_t N) {
+        template <typename Container> void build(Container &&edges, const std::size_t N) {
             /// This function assume that edges vector is sorted.
-            std::is_sorted(edges.begin(), edges.end(), graph::Less<index_type, edge_type>());
-            Vertexes.assign(N + 1, 0);
-            Edges.reserve(edges.size());
-            for (auto const &val : edges) {
-                Vertexes[val.SrcId + 1]++;
-                Edges.emplace_back(val);
-            }
+            assert(std::is_sorted(edges.begin(), edges.end(),
+                                  graph::Less<index_type, edge_type>()));
 
+            Edges = std::move(edges);
+
+            // Update the vertex information.
+            Vertexes.assign(N + 1, 0);
+            std::for_each(
+                Edges.cbegin(), Edges.cend(),
+                [this](auto const &anEdge) { Vertexes[anEdge.SrcId + 1]++; });
+
+            // Update the begin and end location for each column.
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
                 Vertexes[currentCol + 1] += Vertexes[currentCol];
             }
@@ -173,8 +159,7 @@ namespace graph {
     template <typename index_type, typename edge_type>
     bool operator==(const SparseGraph<index_type, edge_type> &lhs,
                     const SparseGraph<index_type, edge_type> &rhs) {
-        return lhs.Vertexes == rhs.Vertexes && lhs.Edges == rhs.Edges &&
-               lhs.IsDirected == rhs.IsDirected;
+        return lhs.IsDirected == rhs.IsDirected && lhs.Vertexes == rhs.Vertexes && lhs.Edges == rhs.Edges;
     }
 }
 
