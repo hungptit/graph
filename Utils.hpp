@@ -1,5 +1,5 @@
-#ifndef Utils_hpp
-#define Utils_hpp
+#ifndef Graph_Utils_hpp
+#define Graph_Utils_hpp
 
 #include "DataStructures.hpp"
 

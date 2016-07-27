@@ -8,7 +8,10 @@
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
-TEST(bfs, Positive) {
+std::vector<std::string> expectedResultsPreOrdering{ "A", "B", "C", "E", "D", "F", "G" };
+std::vector<std::string> expectedResultsPostOrdering{"A", "B", "C", "D", "E", "F", "G"};
+
+TEST(bfs_preordering, Positive) {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -24,8 +27,7 @@ TEST(bfs, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{"A", "B", "C", "D", "E", "F", "G"};
-    EXPECT_EQ(expectedResults, results);
+    EXPECT_EQ(expectedResultsPreOrdering, results);
 
     {
         cereal::JSONOutputArchive oar(output);

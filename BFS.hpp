@@ -1,5 +1,5 @@
-#ifndef BFS_hpp_
-#define BFS_hpp_
+#ifndef Graph_BFS_hpp_
+#define Graph_BFS_hpp_
 
 #include "DataStructures.hpp"
 #include <vector>

@@ -8,6 +8,9 @@
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
+std::vector<std::string> expectedResultsPostOrdering{ "D", "E", "F", "B", "G", "C", "A" };
+std::vector<std::string> expectedResultsPreOrdering{ "A", "B", "D", "F", "E", "C", "G" };
+
 TEST(dfs_preordering, Positive) {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
@@ -23,8 +26,7 @@ TEST(dfs_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{ "A", "B", "E", "F", "C", "G", "D" };
-    EXPECT_EQ(expectedResults, results);
+    EXPECT_EQ(expectedResultsPreOrdering, results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -50,8 +52,7 @@ TEST(dfs_postordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{ "E", "F", "B", "G", "C", "D", "A" };
-    EXPECT_EQ(expectedResults, results);
+    EXPECT_EQ(expectedResultsPostOrdering, results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -82,8 +83,7 @@ TEST(dfs_recursive_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{ "A", "B", "E", "F", "C", "G", "D" };
-    EXPECT_EQ(expectedResults, results);
+    EXPECT_EQ(expectedResultsPreOrdering, results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -114,8 +114,7 @@ TEST(dfs_recursive_postordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    std::vector<std::string> expectedResults{ "E", "F", "B", "G", "C", "D", "A" };
-    EXPECT_EQ(expectedResults, results);
+    EXPECT_EQ(expectedResultsPostOrdering, results);
 
     {
         cereal::JSONOutputArchive oar(output);

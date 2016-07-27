@@ -1,5 +1,5 @@
-#ifndef DFS_hpp_
-#define DFS_hpp_
+#ifndef Graph_DFS_hpp_
+#define Graph_DFS_hpp_
 
 #include "DataStructures.hpp"
 

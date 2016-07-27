@@ -56,7 +56,7 @@ TEST(BasicEdgeData, Positive) {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("An edge", anEdge));
     }
-
+    
     std::vector<EdgeData> edges{{1, 2}, {2, 3}, {1, 3}};
     {
         cereal::JSONOutputArchive oar(output);

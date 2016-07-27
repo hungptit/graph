@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef SparseGraph_hpp_
-#define SparseGraph_hpp_
+#ifndef Graph_SparseGraph_hpp_
+#define Graph_SparseGraph_hpp_
 
 #include <deque>
 #include <fstream>
