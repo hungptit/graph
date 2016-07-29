@@ -108,22 +108,24 @@ namespace graph {
 
         explicit SparseGraph() : Vertexes(), Edges(), IsDirected() {}
 
-        explicit SparseGraph(std::vector<edge_type> &data, const std::size_t N,
-                             const bool isDirected)
-            : IsDirected(isDirected) {
+        template <typename T>
+        explicit SparseGraph(T &&data, const std::size_t N,
+                             const bool isDirected) noexcept
+            : Vertexes(), Edges(), IsDirected(isDirected) {
             build(data, N);
         }
 
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
             : Vertexes(std::move(v)), Edges(std::move(e)), IsDirected(isDirected) {}
 
+
+        // TODO: Improve this function.
         template <typename Container> void build(Container &&edges, const std::size_t N) {
             /// This function assume that edges vector is sorted.
             assert(std::is_sorted(edges.begin(), edges.end(),
                                   graph::Less<index_type, edge_type>()));
 
             Edges = std::move(edges);
-
             // Update the vertex information.
             Vertexes.assign(N + 1, 0);
             std::for_each(Edges.cbegin(), Edges.cend(),
