@@ -76,6 +76,22 @@ TEST(BasicEdgeData, Positive) {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Sorted edges with Less", edges));
     }
+        
+    fmt::print("{}\n", output.str());
+}
+
+
+TEST(BasicEdgeDataHash, Positive) {
+    using index_type = size_t;
+    using EdgeData = graph::BasicEdgeData<index_type>;
+    std::vector<EdgeData> data{{1, 2}, {2, 3}, {1, 2}, {1, 3}};
+    std::unordered_set<EdgeData> edges(data.begin(), data.end());
+
+    std::stringstream output;
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("Raw edges data", edges));
+    }
 
     fmt::print("{}\n", output.str());
 }

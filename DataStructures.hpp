@@ -20,7 +20,8 @@ namespace graph {
     enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
     enum NodeColors { BLACK, WHITE };
 
-    template <typename index_type> struct BasicEdgeData {
+    template <typename itype> struct BasicEdgeData {
+        using index_type = itype;
         index_type SrcId;
         index_type DstId;
 
@@ -164,6 +165,31 @@ namespace graph {
         return lhs.IsDirected == rhs.IsDirected && lhs.Vertexes == rhs.Vertexes &&
                lhs.Edges == rhs.Edges;
     }
+}
+
+namespace std {
+    template <typename index_type> struct hash<graph::BasicEdgeData<index_type>> {
+        using result_type = std::size_t;
+
+        result_type operator()(graph::BasicEdgeData<index_type> const& value) const
+        {
+            result_type const h1 ( std::hash<index_type>()(value.SrcId) );
+            result_type const h2 ( std::hash<index_type>()(value.DstId) );
+            return h1 ^ (h2 << 1);
+        }
+    };
+
+    template <typename index_type, typename weight_type> struct hash<graph::WeightedEdgeData<index_type, weight_type>> {
+        using result_type = std::size_t;
+
+        result_type operator()(graph::BasicEdgeData<index_type> const& value) const
+        {
+            result_type const h1 ( std::hash<index_type>()(value.SrcId) );
+            result_type const h2 ( std::hash<index_type>()(value.DstId) );
+            result_type const h3 ( std::hash<weight_type>()(value.DstId) );
+            return h1 ^ (h2 << 1) ^ (h3 << 2);
+        }
+    };
 }
 
 #endif
