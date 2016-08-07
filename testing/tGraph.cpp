@@ -86,7 +86,42 @@ TEST(BasicEdgeDataHash, Positive) {
     using EdgeData = graph::BasicEdgeData<index_type>;
     std::vector<EdgeData> data{{1, 2}, {2, 3}, {1, 2}, {1, 3}};
     std::unordered_set<EdgeData> edges(data.begin(), data.end());
+    std::set<EdgeData> aSet(data.begin(), data.end());
+    
+    EXPECT_TRUE(edges.size() == 3);
+    
+    std::stringstream output;
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("std::unordered_set", edges));
+    }
 
+    {
+      cereal::JSONOutputArchive oar(output);
+      oar(cereal::make_nvp("std::set", aSet));
+    }
+
+    fmt::print("{}\n", output.str());
+
+    EdgeData x{1, 2};
+    EdgeData y{1, 3};
+    EdgeData z{2, 3};
+    EXPECT_TRUE(x < y);
+    EXPECT_TRUE(x < z);
+    EXPECT_FALSE(y < x);
+    EXPECT_TRUE(x == x);
+    EXPECT_FALSE(x == y);
+}
+
+TEST(WeightedEdgeDataHash, Positive) {
+    using index_type = size_t;
+    using weight_type = double;
+    using EdgeData = graph::WeightedEdgeData<index_type, weight_type>;
+    std::vector<EdgeData> data{{1, 2, 3}, {2, 3, 1}, {1, 2, 2}, {1, 3, 0}, {1, 2, 3}};
+    std::unordered_set<EdgeData> edges(data.begin(), data.end());
+
+    EXPECT_TRUE(edges.size() == 4);
+    
     std::stringstream output;
     {
         cereal::JSONOutputArchive oar(output);
@@ -94,7 +129,19 @@ TEST(BasicEdgeDataHash, Positive) {
     }
 
     fmt::print("{}\n", output.str());
+
+    EdgeData x{1, 2, 1};
+    EdgeData y{1, 3, 2};
+    EdgeData z{2, 3, 1};
+    EdgeData t{1, 2, 3};
+    EXPECT_TRUE(x < y);
+    EXPECT_TRUE(x < z);
+    EXPECT_TRUE(x < t);
+    EXPECT_FALSE(y < x);
+    EXPECT_TRUE(x == x);
+    EXPECT_FALSE(x == y);
 }
+
 
 TEST(WeightedEdgeData, Positive) {
     using index_type = size_t;

@@ -20,6 +20,10 @@ namespace graph {
     enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
     enum NodeColors { BLACK, WHITE };
 
+    /**
+     * BasicEdgeData
+     *
+     */
     template <typename itype> struct BasicEdgeData {
         using index_type = itype;
         index_type SrcId;
@@ -27,12 +31,12 @@ namespace graph {
 
         BasicEdgeData() {}
 
-        BasicEdgeData(const index_type srcId, const index_type dstId)
-            : SrcId(srcId), DstId(dstId) {}
+        BasicEdgeData(const index_type srcId, const index_type dstId) noexcept
+            : SrcId(srcId), DstId(dstId)  {}
 
-        BasicEdgeData(const BasicEdgeData &data) : SrcId(data.SrcId), DstId(data.DstId){};
+        BasicEdgeData(const BasicEdgeData &data) noexcept : SrcId(data.SrcId), DstId(data.DstId){};
 
-        template <typename T> BasicEdgeData(T &&data) : SrcId(data.SrcId), DstId(data.DstId){};
+        BasicEdgeData(BasicEdgeData &&data) : SrcId(data.SrcId), DstId(data.DstId){};
 
         BasicEdgeData &operator=(const BasicEdgeData &) = default;
 
@@ -41,20 +45,34 @@ namespace graph {
         }
     };
 
-    // Definition for the weighted edge data
+    template <typename index_type>
+    bool operator==(const BasicEdgeData<index_type> &lhs,
+                    const BasicEdgeData<index_type> &rhs) {
+        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId;
+    }
+
+    template <typename index_type>
+    bool operator<(const BasicEdgeData<index_type> &lhs, const BasicEdgeData<index_type> &rhs) {
+        return (lhs.SrcId < rhs.SrcId) || ((lhs.SrcId == rhs.SrcId) && (lhs.DstId < rhs.DstId));
+    }
+
+    /*
+     * WeightedEdgeData
+     *
+     */
     template <typename index_type, typename weight_type> struct WeightedEdgeData {
         index_type SrcId;
         index_type DstId;
         weight_type Weight;
 
         WeightedEdgeData(const index_type srcId, const index_type dstId,
-                         const weight_type weight)
+                         const weight_type weight) noexcept
             : SrcId(srcId), DstId(dstId), Weight(weight) {}
 
-        WeightedEdgeData(const WeightedEdgeData &data)
+        WeightedEdgeData(const WeightedEdgeData &data) noexcept
             : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
 
-        WeightedEdgeData(WeightedEdgeData &&data)
+        WeightedEdgeData(WeightedEdgeData &&data) noexcept
             : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
 
         WeightedEdgeData &operator=(const WeightedEdgeData &rhs) = default;
@@ -65,21 +83,19 @@ namespace graph {
         }
     };
 
-    /**
-     * Define some operators for EdgeData classes.
-     *
-     */
-
-    template <typename index_type>
-    bool operator==(const BasicEdgeData<index_type> &lhs,
-                    const BasicEdgeData<index_type> &rhs) {
-        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId;
-    }
-
     template <typename index_type, typename edge_type>
     bool operator==(const WeightedEdgeData<index_type, edge_type> &lhs,
                     const WeightedEdgeData<index_type, edge_type> &rhs) {
         return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId && lhs.Weight == rhs.Weight;
+    }
+
+    template <typename index_type, typename edge_type>
+    bool operator<(const WeightedEdgeData<index_type, edge_type> &lhs,
+                   const WeightedEdgeData<index_type, edge_type> &rhs) {
+        return (lhs.SrcId < rhs.SrcId) ||
+               ((lhs.SrcId == rhs.SrcId) && (lhs.DstId < rhs.DstId)) ||
+               ((lhs.SrcId == rhs.SrcId) && (lhs.DstId == rhs.DstId) &&
+                (lhs.Weight < rhs.Weight));
     }
 
     // Greater comparators
@@ -110,8 +126,7 @@ namespace graph {
         explicit SparseGraph() : Vertexes(), Edges(), IsDirected() {}
 
         template <typename T>
-        explicit SparseGraph(T &&data, const std::size_t N,
-                             const bool isDirected) noexcept
+        explicit SparseGraph(T &&data, const std::size_t N, const bool isDirected) noexcept
             : Vertexes(), Edges(), IsDirected(isDirected) {
             build(data, N);
         }
@@ -119,18 +134,17 @@ namespace graph {
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
             : Vertexes(std::move(v)), Edges(std::move(e)), IsDirected(isDirected) {}
 
-
-        // TODO: Improve this function.
         template <typename Container> void build(Container &&edges, const std::size_t N) {
             /// This function assume that edges vector is sorted.
             assert(std::is_sorted(edges.begin(), edges.end(),
                                   graph::Less<index_type, edge_type>()));
 
             Edges = std::move(edges);
+
             // Update the vertex information.
             Vertexes.assign(N + 1, 0);
             std::for_each(Edges.cbegin(), Edges.cend(),
-                          [this](auto const &anEdge) { Vertexes[anEdge.SrcId + 1]++; });
+                          [&](auto const &anEdge) { Vertexes[anEdge.SrcId + 1]++; });
 
             // Update the begin and end location for each column.
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
@@ -170,24 +184,22 @@ namespace graph {
 namespace std {
     template <typename index_type> struct hash<graph::BasicEdgeData<index_type>> {
         using result_type = std::size_t;
-
-        result_type operator()(graph::BasicEdgeData<index_type> const& value) const
-        {
-            result_type const h1 ( std::hash<index_type>()(value.SrcId) );
-            result_type const h2 ( std::hash<index_type>()(value.DstId) );
-            return h1 ^ (h2 << 1);
+        result_type operator()(graph::BasicEdgeData<index_type> const value) const {
+            result_type const h1(std::hash<index_type>()(value.SrcId));
+            result_type const h2(std::hash<index_type>()(value.DstId));
+            return h1 ^ (h2 << 4);
         }
     };
 
-    template <typename index_type, typename weight_type> struct hash<graph::WeightedEdgeData<index_type, weight_type>> {
+    template <typename index_type, typename weight_type>
+    struct hash<graph::WeightedEdgeData<index_type, weight_type>> {
         using result_type = std::size_t;
-
-        result_type operator()(graph::BasicEdgeData<index_type> const& value) const
-        {
-            result_type const h1 ( std::hash<index_type>()(value.SrcId) );
-            result_type const h2 ( std::hash<index_type>()(value.DstId) );
-            result_type const h3 ( std::hash<weight_type>()(value.DstId) );
-            return h1 ^ (h2 << 1) ^ (h3 << 2);
+        result_type
+        operator()(graph::WeightedEdgeData<index_type, weight_type> const value) const {
+            result_type const h1(std::hash<index_type>()(value.SrcId));
+            result_type const h2(std::hash<index_type>()(value.DstId));
+            result_type const h3(std::hash<weight_type>()(value.Weight));
+            return h1 ^ (h2 << 4) ^ (h3 << 8);
         }
     };
 }
