@@ -8,7 +8,8 @@
 #include "graph/DataStructures.hpp"
 
 namespace {
-      // The test graph is taken from this wiki page: https://en.wikipedia.org/wiki/Depth-first_search
+    // The test graph is taken from this wiki page:
+    // https://en.wikipedia.org/wiki/Depth-first_search
     template <typename index_type> auto simpleDirectedGraph() {
         using EdgeData = graph::BasicEdgeData<index_type>;
         std::vector<graph::BasicEdgeData<index_type>> edges = {{0, 1}, {0, 2}, {0, 4}, {1, 3},
@@ -17,7 +18,7 @@ namespace {
         std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
         return std::make_tuple(edges, labels, 7);
     }
-    
+
     template <typename index_type> auto topologicalSortedListGraph() {
         using edge_type = graph::BasicEdgeData<index_type>;
         std::vector<graph::BasicEdgeData<index_type>> edges = {

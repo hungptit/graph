@@ -58,6 +58,9 @@ TEST(BasicEdgeData, Positive) {
     }
     
     std::vector<EdgeData> edges{{1, 2}, {2, 3}, {1, 3}};
+    std::sort(edges.begin(), edges.end());
+    // std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
+    
     {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Multiple edges", edges));
@@ -84,13 +87,20 @@ TEST(BasicEdgeData, Positive) {
 TEST(BasicEdgeDataHash, Positive) {
     using index_type = size_t;
     using EdgeData = graph::BasicEdgeData<index_type>;
+    std::stringstream output;
     std::vector<EdgeData> data{{1, 2}, {2, 3}, {1, 2}, {1, 3}};
+    std::sort(data.begin(), data.end());    
+    
     std::unordered_set<EdgeData> edges(data.begin(), data.end());
     std::set<EdgeData> aSet(data.begin(), data.end());
     
     EXPECT_TRUE(edges.size() == 3);
-    
-    std::stringstream output;
+
+    {
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("data", data));
+    }
+
     {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("std::unordered_set", edges));

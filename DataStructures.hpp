@@ -3,18 +3,15 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "cereal/archives/binary.hpp"
 #include "cereal/archives/json.hpp"
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/archives/xml.hpp"
 #include "cereal/types/array.hpp"
-#include "cereal/types/deque.hpp"
 #include "cereal/types/string.hpp"
-#include "cereal/types/tuple.hpp"
 #include "cereal/types/vector.hpp"
-
-#include <algorithm>
 
 namespace graph {
     enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
@@ -128,7 +125,7 @@ namespace graph {
         template <typename T>
         explicit SparseGraph(T &&data, const std::size_t N, const bool isDirected) noexcept
             : Vertexes(), Edges(), IsDirected(isDirected) {
-            build(data, N);
+          build(data, N);
         }
 
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
@@ -177,7 +174,7 @@ namespace graph {
     bool operator==(const SparseGraph<index_type, edge_type> &lhs,
                     const SparseGraph<index_type, edge_type> &rhs) {
         return lhs.IsDirected == rhs.IsDirected && lhs.Vertexes == rhs.Vertexes &&
-               lhs.Edges == rhs.Edges;
+          lhs.Edges == rhs.Edges;
     }
 }
 
