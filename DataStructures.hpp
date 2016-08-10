@@ -95,23 +95,6 @@ namespace graph {
                 (lhs.Weight < rhs.Weight));
     }
 
-    // Greater comparators
-    template <typename index_type, typename EdgeData> struct Greater;
-
-    template <typename index_type> struct Greater<index_type, BasicEdgeData<index_type>> {
-        bool operator()(BasicEdgeData<index_type> a, BasicEdgeData<index_type> b) {
-            return (a.SrcId > b.SrcId) || ((a.SrcId == b.SrcId) && (a.DstId > b.DstId));
-        }
-    };
-
-    // Less comparators
-    template <typename index_type, typename EdgeData> struct Less;
-    template <typename index_type> struct Less<index_type, BasicEdgeData<index_type>> {
-        bool operator()(BasicEdgeData<index_type> a, BasicEdgeData<index_type> b) {
-            return (a.SrcId < b.SrcId) || ((a.SrcId == b.SrcId) && (a.DstId < b.DstId));
-        }
-    };
-
     // Simple implementation for a graph using CSR format.
     template <typename itype, typename etype> struct SparseGraph {
         using index_type = itype;
@@ -133,8 +116,7 @@ namespace graph {
 
         template <typename Container> void build(Container &&edges, const std::size_t N) {
             /// This function assume that edges vector is sorted.
-            assert(std::is_sorted(edges.begin(), edges.end(),
-                                  graph::Less<index_type, edge_type>()));
+            assert(std::is_sorted(edges.begin(), edges.end()));
 
             Edges = std::move(edges);
 

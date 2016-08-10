@@ -59,21 +59,11 @@ TEST(BasicEdgeData, Positive) {
     
     std::vector<EdgeData> edges{{1, 2}, {2, 3}, {1, 3}};
     std::sort(edges.begin(), edges.end());
-    // std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
     
     {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Multiple edges", edges));
     }
-
-    std::sort(edges.begin(), edges.end(), graph::Greater<index_type, EdgeData>());
-
-    {
-        cereal::JSONOutputArchive oar(output);
-        oar(cereal::make_nvp("Sorted edges with Greater", edges));
-    }
-
-    // std::sort(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>());
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -181,7 +171,7 @@ TEST(SparseGraph, Positive) {
     using EdgeData = decltype(edges)::value_type;
 
     EXPECT_TRUE(
-        std::is_sorted(edges.begin(), edges.end(), graph::Less<index_type, EdgeData>()));
+        std::is_sorted(edges.begin(), edges.end()));
 
     std::stringstream output;
     {
