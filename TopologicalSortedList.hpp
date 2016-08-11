@@ -36,7 +36,7 @@ namespace graph {
 
         for (index_type vid = 0; vid < N; ++vid) {
             if (status[vid] == UNDISCOVERED) {
-                dfs_postordering_front<Stack>(g, vid, status, results);
+                dfs_postordering_front<Stack>(g, {vid}, status, results);
             }
         }
         return results;

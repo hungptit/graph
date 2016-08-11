@@ -16,22 +16,20 @@ namespace graph {
      */
     template <typename Container, typename Graph>
     std::vector<typename Graph::index_type>
-    bfs_preordering(const Graph &g, const typename Graph::index_type vid) {
+    bfs_preordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
         size_t N = g.numberOfVertexes();
-        assert(vid < N);
-
-        Container stack{vid};
+        Container aQueue(vids.begin(), vids.end());
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
         results.reserve(N);
 
-        while (!stack.empty()) {
-            index_type currentVid = stack.front();
+        while (!aQueue.empty()) {
+            index_type currentVid = aQueue.front();
             assert(currentVid < N);
-            stack.pop_front();
+            aQueue.pop_front();
 
             index_type const begin = g.begin(currentVid);
             index_type const end = g.end(currentVid);
@@ -42,7 +40,7 @@ namespace graph {
                 for (index_type eidx = begin; eidx < end; ++eidx) {
                     const EdgeData anEdge = g.edge(eidx);
                     const index_type childVid = anEdge.DstId;
-                    stack.push_back(childVid);
+                    aQueue.push_back(childVid);
                 }
             }
         }

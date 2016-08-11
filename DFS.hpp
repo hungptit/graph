@@ -16,13 +16,12 @@ namespace graph {
      */
     template <typename Container, typename Graph>
     std::vector<typename Graph::index_type>
-    dfs_preordering(const Graph &g, const Container &vids) {
+    dfs_preordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
         index_type N = g.numberOfVertexes();
-
-        Container stack{vids};
+        Container stack(vids.cbegin(), vids.cend());
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
         results.reserve(N);
@@ -47,16 +46,15 @@ namespace graph {
     }
 
     template <typename Container, typename Graph>
-    void dfs_postordering_back(const Graph &g, const typename Graph::index_type vid,
+    void dfs_postordering_back(const Graph &g,
+                               const std::vector<typename Graph::index_type> &vids,
                                std::vector<NodeStatus> &status,
                                std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
         size_t N = g.numberOfVertexes();
-        assert(vid < N);
-
-        Container stack{vid};
+        Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
@@ -86,16 +84,15 @@ namespace graph {
 
     // This function assume that a given graph is DAG.
     template <typename Container, typename Graph>
-    void dfs_postordering_front(const Graph &g, const typename Graph::index_type vid,
+    void dfs_postordering_front(const Graph &g,
+                                const std::vector<typename Graph::index_type> &vids,
                                 std::vector<NodeStatus> &status,
                                 std::deque<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
         size_t N = g.numberOfVertexes();
-        assert(vid < N);
-
-        Container stack{vid};
+        Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
@@ -118,21 +115,21 @@ namespace graph {
                 results.push_front(currentVid);
                 status[currentVid] = DISCOVERED;
             } else {
-                throw(std::runtime_error("Found a loop in a given graph"));
+                // throw(std::runtime_error("Found a loop in a given graph"));
             }
         }
     }
 
     template <typename Container, typename Graph>
     std::vector<typename Graph::index_type>
-    dfs_postordering(const Graph &g, const typename Graph::index_type vid) {
+    dfs_postordering(const Graph &g,
+                     const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
         size_t N = g.numberOfVertexes();
-        assert(vid < N);
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<index_type> results;
         results.reserve(N);
-        dfs_postordering_back<Container>(g, vid, status, results);
+        dfs_postordering_back<Container>(g, vids, status, results);
         return results;
     }
 
