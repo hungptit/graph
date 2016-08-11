@@ -20,7 +20,7 @@ TEST(dfs_preordering, Positive) {
     std::stringstream output;
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
     index_type rootVid = 0;
-    auto vids = graph::dfs_preordering<std::vector<index_type>>(g, rootVid);
+    auto vids = graph::dfs_preordering<std::vector<index_type>>(g, {rootVid});
     std::vector<std::string> results;
     for (auto vid : vids) {
         results.push_back(labels[vid]);

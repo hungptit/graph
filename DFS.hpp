@@ -16,14 +16,13 @@ namespace graph {
      */
     template <typename Container, typename Graph>
     std::vector<typename Graph::index_type>
-    dfs_preordering(const Graph &g, const typename Graph::index_type vid) {
+    dfs_preordering(const Graph &g, const Container &vids) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
-        assert(vid < N);
+        index_type N = g.numberOfVertexes();
 
-        Container stack{vid};
+        Container stack{vids};
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
         results.reserve(N);
