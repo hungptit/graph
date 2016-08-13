@@ -53,7 +53,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
+        const index_type N = g.numberOfVertexes();
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
@@ -91,7 +91,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
+        const index_type N = g.numberOfVertexes();
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
@@ -148,7 +148,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
+        const index_type N = g.numberOfVertexes();
         assert(vid < N);
 
         if (status[vid] == UNDISCOVERED) {
@@ -173,7 +173,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
+        const index_type N = g.numberOfVertexes();
         assert(vid < N);
 
         if (status[vid] == UNDISCOVERED) {
