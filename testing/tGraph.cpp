@@ -168,7 +168,7 @@ TEST(SparseGraph, Positive) {
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
-    using EdgeData = decltype(edges)::value_type;
+    using edge_type = decltype(edges)::value_type;
 
     EXPECT_TRUE(
         std::is_sorted(edges.begin(), edges.end()));
@@ -180,7 +180,7 @@ TEST(SparseGraph, Positive) {
     }
 
     // Construct the graph given edge data
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, 6, true);
+    graph::SparseGraph<index_type, edge_type> g(edges, 6, true);
     {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Constructed graph", g));
