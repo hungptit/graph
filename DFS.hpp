@@ -56,7 +56,7 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -93,7 +93,7 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
