@@ -1,6 +1,4 @@
-#ifndef Graph_DFS_hpp_
-#define Graph_DFS_hpp_
-
+#pragma once
 #include "DataStructures.hpp"
 
 #include <vector>
@@ -184,5 +182,3 @@ namespace graph {
         }
     }
 }
-
-#endif

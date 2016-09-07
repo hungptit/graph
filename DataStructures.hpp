@@ -1,5 +1,4 @@
-#ifndef Graph_DataStructures_hpp_
-#define Graph_DataStructures_hpp_
+#pragma once
 
 #include <algorithm>
 #include <string>
@@ -183,4 +182,3 @@ namespace std {
     };
 }
 
-#endif

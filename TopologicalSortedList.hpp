@@ -1,9 +1,6 @@
-#ifndef TopologicalSortedList_hpp_
-#define TopologicalSortedList_hpp_
-
+#pragma once
 #include "DataStructures.hpp"
 #include "DFS.hpp"
-
 #include <deque>
 #include <vector>
 
@@ -42,4 +39,3 @@ namespace graph {
         return results;
     }
 }
-#endif

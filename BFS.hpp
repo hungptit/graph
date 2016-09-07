@@ -1,5 +1,4 @@
-#ifndef Graph_BFS_hpp_
-#define Graph_BFS_hpp_
+#pragma once
 
 #include "DataStructures.hpp"
 #include <vector>
@@ -47,4 +46,3 @@ namespace graph {
         return results;
     }
 }
-#endif
