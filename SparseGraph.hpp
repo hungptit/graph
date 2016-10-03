@@ -7,8 +7,7 @@
  *
  */
 
-#ifndef Graph_SparseGraph_hpp_
-#define Graph_SparseGraph_hpp_
+#pragma once
 
 #include <deque>
 #include <fstream>
@@ -44,5 +43,3 @@
 #include "Utils.hpp"
 #include "DFS.hpp"
 #include "BFS.hpp"
-
-#endif

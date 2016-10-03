@@ -1,6 +1,4 @@
-#ifndef Graph_DFS_hpp_
-#define Graph_DFS_hpp_
-
+#pragma once
 #include "DataStructures.hpp"
 #include <vector>
 
@@ -51,13 +49,11 @@ namespace graph {
                                std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
-
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < g.numberOfVertexes());
-
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
@@ -93,7 +89,7 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < g.numberOfVertexes());
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -143,7 +139,7 @@ namespace graph {
                                    std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
-
+        assert(vid < static_cast<index_type>(g.numberOfVertexes()));
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
@@ -165,7 +161,7 @@ namespace graph {
                                     std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
-
+        assert(vid < static_cast<index_type>(g.numberOfVertexes()));
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
@@ -181,5 +177,3 @@ namespace graph {
         }
     }
 }
-
-#endif
