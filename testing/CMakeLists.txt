@@ -69,6 +69,10 @@ include_directories("${PROJECTS_FOLDER}/3p/fmt/include")
 include_directories ("${PROJECTS_FOLDER}/3p/leveldb/include")
 include_directories ("${PROJECTS_FOLDER}/3p/cereal/include")
 
+# Celero
+include_directories ("${PROJECTS_FOLDER}/3p/Celero/include/")
+set(LIB_CELERO "${PROJECTS_FOLDER}/3p/Celero/bin/libcelero.so")
+
 # This option make sure that we use the local boost version. Note that if the 
 # system boost is installed then CMake might use that boost version.
 set(Boost_USE_STATIC_LIBS ON)
@@ -91,7 +95,15 @@ if (Boost_FOUND)
   set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
   foreach (src_file ${UNITTEST_SRC_FILES})
     ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_GTEST} ${LIB_GTEST_MAIN}  ${LIB_FMT} ${LIB_LEVELDB} ${LIB_SNAPPY} -lpthread)
+    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_GTEST} ${LIB_GTEST_MAIN}  ${LIB_FMT} ${LIB_SNAPPY} -lpthread)
+    ADD_TEST(${src_file} ./${src_file})
+  endforeach (src_file)
+
+  include_directories(${BOOST_INCLUDE_DIRS})
+  set(PERF_TEST_SRC_FILES tPerf)
+  foreach (src_file ${PERF_TEST_SRC_FILES})
+    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_CELERO} ${LIB_FMT} ${LIB_SNAPPY} -lpthread)
     ADD_TEST(${src_file} ./${src_file})
   endforeach (src_file)
 endif (Boost_FOUND)

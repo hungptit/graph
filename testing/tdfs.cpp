@@ -11,6 +11,8 @@
 std::vector<std::string> expectedResultsPostOrdering{ "D", "E", "F", "B", "G", "C", "A" };
 std::vector<std::string> expectedResultsPreOrdering{ "A", "B", "D", "F", "E", "C", "G" };
 
+
+
 TEST(dfs_preordering, Positive) {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
