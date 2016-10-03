@@ -2,7 +2,6 @@
 #define Graph_DFS_hpp_
 
 #include "DataStructures.hpp"
-
 #include <vector>
 
 namespace graph {
@@ -53,12 +52,11 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < g.numberOfVertexes());
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -91,12 +89,11 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < g.numberOfVertexes());
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -122,8 +119,7 @@ namespace graph {
 
     template <typename Container, typename Graph>
     std::vector<typename Graph::index_type>
-    dfs_postordering(const Graph &g,
-                     const std::vector<typename Graph::index_type> &vids) {
+    dfs_postordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
         size_t N = g.numberOfVertexes();
         std::vector<NodeStatus> status(N, UNDISCOVERED);
@@ -148,9 +144,6 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
-        assert(vid < N);
-
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
@@ -172,9 +165,6 @@ namespace graph {
                                     std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
-
-        size_t N = g.numberOfVertexes();
-        assert(vid < N);
 
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
