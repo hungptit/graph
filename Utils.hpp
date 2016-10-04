@@ -1,5 +1,4 @@
-#ifndef Graph_Utils_hpp
-#define Graph_Utils_hpp
+#pragma once
 
 #include "DataStructures.hpp"
 
@@ -46,5 +45,3 @@ namespace graph {
         std::system(cmd.c_str());
     }
 }
-
-#endif

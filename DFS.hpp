@@ -1,6 +1,4 @@
-#ifndef Graph_DFS_hpp_
-#define Graph_DFS_hpp_
-
+#pragma once
 #include "DataStructures.hpp"
 
 #include <vector>
@@ -56,7 +54,7 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -93,7 +91,7 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
@@ -184,5 +182,3 @@ namespace graph {
         }
     }
 }
-
-#endif

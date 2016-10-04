@@ -1,6 +1,4 @@
-#ifndef Data_hpp_
-#define Data_hpp_
-
+#pragma once
 #include <string>
 #include <tuple>
 #include <vector>
@@ -36,5 +34,3 @@ namespace {
         return std::make_tuple(edges, labels, 9);
     }
 }
-
-#endif

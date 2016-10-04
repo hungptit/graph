@@ -115,7 +115,7 @@ TEST(BasicEdgeDataHash, Positive) {
 
 TEST(WeightedEdgeDataHash, Positive) {
     using index_type = size_t;
-    using weight_type = double;
+    using weight_type = int;
     using EdgeData = graph::WeightedEdgeData<index_type, weight_type>;
     std::vector<EdgeData> data{{1, 2, 3}, {2, 3, 1}, {1, 2, 2}, {1, 3, 0}, {1, 2, 3}};
     std::unordered_set<EdgeData> edges(data.begin(), data.end());

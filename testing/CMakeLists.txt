@@ -3,9 +3,6 @@ PROJECT(TOOLS)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 set(PROJECTS_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/../../")
-
-message(${CMAKE_CURRENT_SOURCE_DIR})
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Read the git tags to determine the project version
@@ -24,15 +21,15 @@ include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
-# set(CMAKE_BUILD_TYPE Debug)
-set (CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
+# set (CMAKE_BUILD_TYPE Release)
 
 # For clang
 set(CMAKE_CXX_COMPILER "${PROJECTS_FOLDER}3p/llvm/bin/clang++")
 
-add_cxx_compiler_flag(-O4)
+# Extra compiling flags
+add_cxx_compiler_flag(-O3)
 add_cxx_compiler_flag(-std=c++14)
-
 add_cxx_compiler_flag(-Wall)
 add_cxx_compiler_flag(-Wextra)
 add_cxx_compiler_flag(-Wshadow)
@@ -42,7 +39,7 @@ add_cxx_compiler_flag(-Werror MINSIZEREL)
 add_cxx_compiler_flag(-pedantic)
 add_cxx_compiler_flag(-pedantic-errors)
 add_cxx_compiler_flag(-Wshorten-64-to-32)
-# add_cxx_compiler_flag(-Wfloat-equal)
+add_cxx_compiler_flag(-Wfloat-equal)
 add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 add_cxx_compiler_flag(-fstrict-aliasing)
 if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
@@ -53,7 +50,6 @@ if (HAVE_WTHREAD_SAFETY)
   add_definitions(-DHAVE_WTHREAD_SAFETY)
   cxx_feature_check(THREAD_SAFETY_ATTRIBUTES)
 endif()
-
 
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -72,6 +68,10 @@ include_directories("${PROJECTS_FOLDER}/3p/gtest/include")
 include_directories("${PROJECTS_FOLDER}/3p/fmt/include")
 include_directories ("${PROJECTS_FOLDER}/3p/leveldb/include")
 include_directories ("${PROJECTS_FOLDER}/3p/cereal/include")
+
+# Celero
+include_directories ("${PROJECTS_FOLDER}/3p/Celero/include/")
+set(LIB_CELERO "${PROJECTS_FOLDER}/3p/Celero/bin/libcelero.so")
 
 # This option make sure that we use the local boost version. Note that if the 
 # system boost is installed then CMake might use that boost version.
@@ -95,7 +95,15 @@ if (Boost_FOUND)
   set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
   foreach (src_file ${UNITTEST_SRC_FILES})
     ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_GTEST} ${LIB_GTEST_MAIN}  ${LIB_FMT} ${LIB_LEVELDB} ${LIB_SNAPPY} -lpthread)
+    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_GTEST} ${LIB_GTEST_MAIN}  ${LIB_FMT} ${LIB_SNAPPY} -lpthread)
+    ADD_TEST(${src_file} ./${src_file})
+  endforeach (src_file)
+
+  include_directories(${BOOST_INCLUDE_DIRS})
+  set(PERF_TEST_SRC_FILES tPerf)
+  foreach (src_file ${PERF_TEST_SRC_FILES})
+    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_CELERO} ${LIB_FMT} ${LIB_SNAPPY} -lpthread)
     ADD_TEST(${src_file} ./${src_file})
   endforeach (src_file)
 endif (Boost_FOUND)

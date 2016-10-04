@@ -1,9 +1,8 @@
-#ifndef Graph_DataStructures_hpp_
-#define Graph_DataStructures_hpp_
+#pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include "cereal/archives/binary.hpp"
 #include "cereal/archives/json.hpp"
@@ -29,13 +28,13 @@ namespace graph {
         BasicEdgeData() {}
 
         BasicEdgeData(const index_type srcId, const index_type dstId) noexcept
-            : SrcId(srcId), DstId(dstId)  {}
+            : SrcId(srcId), DstId(dstId) {}
 
-        BasicEdgeData(const BasicEdgeData &data) noexcept : SrcId(data.SrcId), DstId(data.DstId){};
+        BasicEdgeData(const BasicEdgeData &data) noexcept = default;
 
-        BasicEdgeData(BasicEdgeData &&data) : SrcId(data.SrcId), DstId(data.DstId){};
+        BasicEdgeData(BasicEdgeData &&data) noexcept = default;
 
-        BasicEdgeData &operator=(const BasicEdgeData &) = default;
+        BasicEdgeData &operator=(const BasicEdgeData &) noexcept = default;
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId));
@@ -45,12 +44,17 @@ namespace graph {
     template <typename index_type>
     bool operator==(const BasicEdgeData<index_type> &lhs,
                     const BasicEdgeData<index_type> &rhs) {
-        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId;
+        return std::tie(lhs.SrcId, lhs.DstId) == std::tie(rhs.SrcId, rhs.DstId);
     }
 
     template <typename index_type>
     bool operator<(const BasicEdgeData<index_type> &lhs, const BasicEdgeData<index_type> &rhs) {
-        return (lhs.SrcId < rhs.SrcId) || ((lhs.SrcId == rhs.SrcId) && (lhs.DstId < rhs.DstId));
+        return std::tie(lhs.SrcId, lhs.DstId) < std::tie(rhs.SrcId, rhs.DstId);
+    }
+
+    template <typename index_type>
+    bool operator>(const BasicEdgeData<index_type> &lhs, const BasicEdgeData<index_type> &rhs) {
+        return std::tie(lhs.SrcId, lhs.DstId) > std::tie(rhs.SrcId, rhs.DstId);
     }
 
     /*
@@ -66,11 +70,9 @@ namespace graph {
                          const weight_type weight) noexcept
             : SrcId(srcId), DstId(dstId), Weight(weight) {}
 
-        WeightedEdgeData(const WeightedEdgeData &data) noexcept
-            : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
+        WeightedEdgeData(const WeightedEdgeData &data) noexcept = default;
 
-        WeightedEdgeData(WeightedEdgeData &&data) noexcept
-            : SrcId(data.SrcId), DstId(data.DstId), Weight(data.Weight){};
+        WeightedEdgeData(WeightedEdgeData &&data) noexcept = default;
 
         WeightedEdgeData &operator=(const WeightedEdgeData &rhs) = default;
 
@@ -80,19 +82,25 @@ namespace graph {
         }
     };
 
-    template <typename index_type, typename edge_type>
-    bool operator==(const WeightedEdgeData<index_type, edge_type> &lhs,
-                    const WeightedEdgeData<index_type, edge_type> &rhs) {
-        return lhs.SrcId == rhs.SrcId && lhs.DstId == rhs.DstId && lhs.Weight == rhs.Weight;
+    template <typename index_type, typename weight_type>
+    bool operator==(const WeightedEdgeData<index_type, weight_type> &lhs,
+                    const WeightedEdgeData<index_type, weight_type> &rhs) {
+        return std::tie(lhs.SrcId, lhs.DstId, lhs.Weight) ==
+               std::tie(rhs.SrcId, rhs.DstId, rhs.Weight);
     }
 
-    template <typename index_type, typename edge_type>
-    bool operator<(const WeightedEdgeData<index_type, edge_type> &lhs,
-                   const WeightedEdgeData<index_type, edge_type> &rhs) {
-        return (lhs.SrcId < rhs.SrcId) ||
-               ((lhs.SrcId == rhs.SrcId) && (lhs.DstId < rhs.DstId)) ||
-               ((lhs.SrcId == rhs.SrcId) && (lhs.DstId == rhs.DstId) &&
-                (lhs.Weight < rhs.Weight));
+    template <typename index_type, typename weight_type>
+    bool operator<(const WeightedEdgeData<index_type, weight_type> &lhs,
+                   const WeightedEdgeData<index_type, weight_type> &rhs) {
+        return std::tie(lhs.SrcId, lhs.DstId, lhs.Weight) <
+               std::tie(rhs.SrcId, rhs.DstId, rhs.Weight);
+    }
+
+    template <typename index_type, typename weight_type>
+    bool operator>(const WeightedEdgeData<index_type, weight_type> &lhs,
+                   const WeightedEdgeData<index_type, weight_type> &rhs) {
+        return std::tie(lhs.SrcId, lhs.DstId, lhs.Weight) >
+               std::tie(rhs.SrcId, rhs.DstId, rhs.Weight);
     }
 
     // Simple implementation for a graph using CSR format.
@@ -103,27 +111,32 @@ namespace graph {
         using vertex_container = std::vector<index_type>;
         using edge_iterator = typename edge_container::const_iterator;
 
-        explicit SparseGraph() : Vertexes(), Edges(), IsDirected() {}
+        explicit SparseGraph() noexcept : Vertexes(), Edges(), IsDirected() {}
 
         template <typename T>
         explicit SparseGraph(T &&data, const std::size_t N, const bool isDirected) noexcept
             : Vertexes(), Edges(), IsDirected(isDirected) {
-          build(data, N);
+            build(data, N);
         }
 
         explicit SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
             : Vertexes(std::move(v)), Edges(std::move(e)), IsDirected(isDirected) {}
 
-        template <typename Container> void build(Container &&edges, const std::size_t N) {
+        template <typename Container>
+        void build(Container &&edges, const std::size_t N, bool isDirected = true) {
             /// This function assume that edges vector is sorted.
             assert(std::is_sorted(edges.begin(), edges.end()));
 
-            Edges = std::move(edges);
+            IsDirected = isDirected;
+            Edges = std::forward<Container>(edges);
 
             // Update the vertex information.
             Vertexes.assign(N + 1, 0);
-            std::for_each(Edges.cbegin(), Edges.cend(),
-                          [&](auto const &anEdge) { Vertexes[anEdge.SrcId + 1]++; });
+            std::for_each(Edges.cbegin(), Edges.cend(), [&](auto const &anEdge) {
+                // Make sure that vertex and edge information are synced.
+                assert(static_cast<index_type>(N) > anEdge.SrcId);
+                Vertexes[anEdge.SrcId + 1]++;
+            });
 
             // Update the begin and end location for each column.
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
@@ -155,8 +168,8 @@ namespace graph {
     template <typename index_type, typename edge_type>
     bool operator==(const SparseGraph<index_type, edge_type> &lhs,
                     const SparseGraph<index_type, edge_type> &rhs) {
-        return lhs.IsDirected == rhs.IsDirected && lhs.Vertexes == rhs.Vertexes &&
-          lhs.Edges == rhs.Edges;
+        return std::tie(lhs.IsDirected, lhs.Vertexes, lhs.Edges) ==
+               std::tie(rhs.IsDirected, rhs.Vertexes, rhs.Edges);
     }
 }
 
@@ -182,5 +195,3 @@ namespace std {
         }
     };
 }
-
-#endif
