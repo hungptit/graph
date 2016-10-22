@@ -19,7 +19,7 @@ TEST(bfs_preordering, Positive) {
     auto N = std::get<2>(data);
     std::stringstream output;
 
-    graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
+    graph::SparseGraph<index_type, decltype(edges)::value_type> g(std::get<0>(data), N, true);
     index_type rootVid = 0;
     auto vids = graph::bfs_preordering<std::deque<index_type>>(g, {rootVid});
     std::vector<std::string> results;

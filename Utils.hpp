@@ -40,8 +40,8 @@ namespace graph {
     }
 
     /// View a dot file using dot command.
-    void viewdot(const std::string &dotFile) {
+  int viewdot(const std::string &dotFile) {
         const std::string cmd = "dot -Txlib " + dotFile;
-        std::system(cmd.c_str());
+        return std::system(cmd.c_str());
     }
 }
