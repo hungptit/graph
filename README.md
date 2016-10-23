@@ -1,6 +1,6 @@
 # graph
 
-This is a simple and high performance graph library written in modern C++ i.e C++11 and C++14. **graph** can be suitable for high performance applications that do not need to modify the graph and require very fast serialization/deserialization.
+This is a small and fast graph library written using C++11/14. **graph** is suitable for high performance applications that do not need to modify the graph and require very fast serialization/deserialization i.e [sbutils](https://github.com/hungptit/sbutils).
 
 ## Features ##
 
@@ -10,5 +10,4 @@ This is a simple and high performance graph library written in modern C++ i.e C+
 
 * Provide several basic recursive and non-recursive graph traversal algorithms such as DFS and BFS.
 
-* Output the graph information in DOT, JSON, and XML formats.
-
+* Output the graph information in Binary, DOT, JSON, and XML formats.
