@@ -38,8 +38,9 @@
 #include "cereal/types/valarray.hpp"
 #include "cereal/types/vector.hpp"
 
+// graph
+#include "BFS.hpp"
+#include "DFS.hpp"
 #include "DataStructures.hpp"
 #include "TopologicalSortedList.hpp"
 #include "Utils.hpp"
-#include "DFS.hpp"
-#include "BFS.hpp"
