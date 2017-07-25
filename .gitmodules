@@ -1,12 +1,12 @@
 [submodule "fmt"]
-	path = fmt
+	path = 3p/fmt
 	url = https://github.com/fmtlib/fmt.git
 [submodule "cereal"]
-	path = cereal
+	path = 3p/cereal
 	url = https://github.com/USCiLab/cereal.git
 [submodule "googletest"]
-	path = googletest
+	path = 3p/googletest
 	url = https://github.com/google/googletest.git
 [submodule "Celero"]
-	path = Celero
+	path = 3p/Celero
 	url = https://github.com/DigitalInBlue/Celero.git

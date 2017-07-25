@@ -27,7 +27,7 @@ include(CXXFeatureCheck)
 set (CMAKE_BUILD_TYPE Release)
 
 # For clang
-set(CMAKE_CXX_COMPILER "clang++")
+# set(CMAKE_CXX_COMPILER "clang++")
 
 # Extra compiling flags
 add_cxx_compiler_flag(-O3)

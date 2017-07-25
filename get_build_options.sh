@@ -1,6 +1,8 @@
 #!/bin/bash
+set -euo pipefail				# Use Bash strict mode
+
 ROOT_DIR=$PWD
-SRC_DIR=$ROOT_DIR
+SRC_DIR=$ROOT_DIR/3p
 TMP_DIR=/tmp/build/
 PREFIX=$ROOT_DIR
 mkdir -p $TMP_DIR
@@ -56,6 +58,9 @@ fi
 
 CMAKE_RELEASE_BUILD="-DCMAKE_BUILD_TYPE=Release"
 CMAKE_USE_CLANG="-DCMAKE_CXX_COMPILER=${CLANGPP} -DCMAKE_C_COMPILER=${CLANG}"
+
+EXTRA_CFLAGS="-O3 -march=native -DNDEBUG"
+EXTRA_CXXFLAGS="-O3 -march=native -DNDEBUG"
 
 # Display build configurations
 printf  "========= Build configuration =========\n"
