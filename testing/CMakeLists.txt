@@ -71,7 +71,7 @@ set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")
 include_directories("${ROOT_DIR}/")
 include_directories("${ROOT_DIR}/include")
 
-set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
+set(UNITTEST_SRC_FILES tGraph tdfs tbfs tTopologicalSortedList)
 foreach (src_file ${UNITTEST_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_GTEST} ${LIB_GTEST_MAIN} -lpthread)
