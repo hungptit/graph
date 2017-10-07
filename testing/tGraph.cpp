@@ -2,9 +2,7 @@
 #include <iostream>
 #include <tuple>
 #include <vector>
-
 #include "fmt/format.h"
-
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
@@ -18,8 +16,11 @@ namespace {
         auto N = std::get<2>(data);
         std::stringstream output;
 
+		using edge_container = decltype(edges);
+		using edge_type = typename edge_container::value_type;
+		
         // Serialize graph data to the output string stream
-        graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
+        graph::SparseGraph<index_type, edge_type> g(edges, N, true);
         {
             OArchive oar(output);
             oar(cereal::make_nvp("Original_graph", g));
@@ -28,7 +29,7 @@ namespace {
         fmt::print("{}\n", output.str());
 
         // Deserialized the data
-        graph::SparseGraph<index_type, decltype(edges)::value_type> g1;
+        graph::SparseGraph<index_type, typename decltype(edges)::value_type> g1;
         {
             IArchive iar(output);
             iar(g1);

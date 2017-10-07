@@ -3,8 +3,15 @@ PROJECT(TOOLS)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
+<<<<<<< HEAD
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+=======
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+message(${ROOT_DIR})
+
+>>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9
 # Read the git tags to determine the project version
 include(GetGitVersion)
 get_git_version(GIT_VERSION)
@@ -25,7 +32,11 @@ include(CXXFeatureCheck)
 set (CMAKE_BUILD_TYPE Release)
 
 # For clang
+<<<<<<< HEAD
 set(CMAKE_CXX_COMPILER "clang++")
+=======
+# set(CMAKE_CXX_COMPILER "clang++")
+>>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9
 
 # Extra compiling flags
 add_cxx_compiler_flag(-O3)
@@ -42,11 +53,16 @@ add_cxx_compiler_flag(-Wshorten-64-to-32)
 add_cxx_compiler_flag(-Wfloat-equal)
 add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 add_cxx_compiler_flag(-fstrict-aliasing)
+
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
+
+add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
+
 if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
   add_cxx_compiler_flag(-Wstrict-aliasing)
 endif()
 add_cxx_compiler_flag(-Wthread-safety)
+
 if (HAVE_WTHREAD_SAFETY)
   add_definitions(-DHAVE_WTHREAD_SAFETY)
   cxx_feature_check(THREAD_SAFETY_ATTRIBUTES)
@@ -56,6 +72,7 @@ ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Used libraries
+<<<<<<< HEAD
 set(LIB_GTEST "${LIBRARIES}/lib/libgtest.a")
 set(LIB_GTEST_MAIN "${LIBRARIES}/lib/libgtest_main.a")
 
@@ -103,3 +120,26 @@ if (Boost_FOUND)
     TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_CELERO} ${LIB_FMT} -lpthread)
   endforeach (src_file)
 endif (Boost_FOUND)
+=======
+set(LIB_GTEST "${ROOT_DIR}/lib/libgtest.a")
+set(LIB_GTEST_MAIN "${ROOT_DIR}/lib/libgtest_main.a")
+set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")
+
+# Include folder
+include_directories("${ROOT_DIR}/")
+include_directories("${ROOT_DIR}/include")
+
+set(UNITTEST_SRC_FILES tGraph tdfs tbfs tTopologicalSortedList)
+foreach (src_file ${UNITTEST_SRC_FILES})
+  ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+  TARGET_LINK_LIBRARIES(${src_file} ${LIB_GTEST} ${LIB_GTEST_MAIN} -lpthread)
+  ADD_TEST(${src_file} ./${src_file})
+endforeach (src_file)
+
+include_directories(${BOOST_INCLUDE_DIRS})
+set(PERF_TEST_SRC_FILES tPerf)
+foreach (src_file ${PERF_TEST_SRC_FILES})
+  ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} -lpthread)
+endforeach (src_file)
+>>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9

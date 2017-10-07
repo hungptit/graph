@@ -33,4 +33,4 @@ namespace {
         std::sort(edges.begin(), edges.end());
         return std::make_tuple(edges, labels, 9);
     }
-}
+} // namespace

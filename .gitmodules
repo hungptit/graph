@@ -1,6 +1,9 @@
-[submodule "cereal"]
-	path = cereal
-	url = https://github.com/USCiLab/cereal.git
 [submodule "fmt"]
-	path = fmt
+	path = 3p/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "cereal"]
+	path = 3p/cereal
+	url = https://github.com/USCiLab/cereal.git
+[submodule "Celero"]
+	path = 3p/Celero
+	url = https://github.com/DigitalInBlue/Celero.git
