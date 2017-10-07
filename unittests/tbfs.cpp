@@ -1,4 +1,3 @@
-#include "gtest/gtest.h"
 #include <iostream>
 #include <tuple>
 #include <vector>
@@ -8,10 +7,13 @@
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
+#define CATCH_CONFIG_MAIN
+#include "catch/catch.hpp"
+
 std::vector<std::string> expectedResultsPreOrdering{ "A", "B", "C", "E", "D", "F", "G" };
 std::vector<std::string> expectedResultsPostOrdering{"A", "B", "C", "D", "E", "F", "G"};
 
-TEST(bfs_preordering, Positive) {
+TEST_CASE("bfs_preordering", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -27,7 +29,7 @@ TEST(bfs_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    EXPECT_EQ(expectedResultsPreOrdering, results);
+    REQUIRE(expectedResultsPreOrdering == results);
 
     {
         cereal::JSONOutputArchive oar(output);

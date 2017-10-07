@@ -1,10 +1,12 @@
 #include "Data.hpp"
 #include "fmt/format.h"
 #include "graph/SparseGraph.hpp"
-#include "catch/catch.hpp"
 #include <iostream>
 #include <tuple>
 #include <vector>
+
+#define CATCH_CONFIG_MAIN
+#include "catch/catch.hpp"
 
 namespace {
     template <typename IArchive, typename OArchive> void serialize_deserialize() {

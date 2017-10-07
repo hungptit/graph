@@ -1,4 +1,3 @@
-#include "gtest/gtest.h"
 #include <iostream>
 #include <tuple>
 #include <vector>
@@ -8,12 +7,13 @@
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
+#define CATCH_CONFIG_MAIN
+#include "catch/catch.hpp"
+
 std::vector<std::string> expectedResultsPostOrdering{ "D", "E", "F", "B", "G", "C", "A" };
 std::vector<std::string> expectedResultsPreOrdering{ "A", "B", "D", "F", "E", "C", "G" };
 
-
-
-TEST(dfs_preordering, Positive) {
+TEST_CASE("dfs_preordering", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -28,7 +28,7 @@ TEST(dfs_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    EXPECT_EQ(expectedResultsPreOrdering, results);
+    REQUIRE(expectedResultsPreOrdering == results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -38,7 +38,7 @@ TEST(dfs_preordering, Positive) {
     fmt::print("{}\n", output.str());
 }
 
-TEST(dfs_postordering, Positive) {
+TEST_CASE("dfs_postordering", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -54,7 +54,7 @@ TEST(dfs_postordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    EXPECT_EQ(expectedResultsPostOrdering, results);
+    REQUIRE(expectedResultsPostOrdering == results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -64,7 +64,7 @@ TEST(dfs_postordering, Positive) {
     fmt::print("{}\n", output.str());
 }
 
-TEST(dfs_recursive_preordering, Positive) {
+TEST_CASE("dfs_recursive_preordering", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -85,7 +85,7 @@ TEST(dfs_recursive_preordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    EXPECT_EQ(expectedResultsPreOrdering, results);
+    REQUIRE(expectedResultsPreOrdering == results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -95,7 +95,7 @@ TEST(dfs_recursive_preordering, Positive) {
     fmt::print("{}\n", output.str());
 }
 
-TEST(dfs_recursive_postordering, Positive) {
+TEST_CASE("dfs_recursive_postordering", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -116,7 +116,7 @@ TEST(dfs_recursive_postordering, Positive) {
         results.push_back(labels[vid]);
     }
 
-    EXPECT_EQ(expectedResultsPostOrdering, results);
+    REQUIRE(expectedResultsPostOrdering == results);
 
     {
         cereal::JSONOutputArchive oar(output);

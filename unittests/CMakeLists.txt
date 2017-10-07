@@ -64,7 +64,7 @@ include_directories(${ROOT_DIR})
 include_directories ("${ROOT_DIR}/include")
 
 # Celero
-set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.dylib")
+set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")
 
 set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
 foreach (src_file ${UNITTEST_SRC_FILES})
@@ -80,4 +80,3 @@ foreach (src_file ${PERF_TEST_SRC_FILES})
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${LIB_FMT} -lpthread)
 endforeach (src_file)
 
-set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")

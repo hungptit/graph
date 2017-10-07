@@ -1,4 +1,3 @@
-#include "gtest/gtest.h"
 #include <iostream>
 #include <tuple>
 #include <vector>
@@ -9,7 +8,10 @@
 #include "Data.hpp"
 #include "graph/SparseGraph.hpp"
 
-TEST(use_dfs_postordering, Positive) {
+#define CATCH_CONFIG_MAIN
+#include "catch/catch.hpp"
+
+TEST_CASE("use_dfs_postordering", "Positive") {
     using index_type = size_t;
     auto data = topologicalSortedListGraph<index_type>();
     auto edges = std::get<0>(data);
@@ -24,7 +26,7 @@ TEST(use_dfs_postordering, Positive) {
     }
 
     std::vector<std::string> expectedResults{"C", "B", "E", "A", "D", "I", "H", "G", "F"};
-    EXPECT_EQ(expectedResults, results);
+    REQUIRE(expectedResults == results);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -37,7 +39,7 @@ TEST(use_dfs_postordering, Positive) {
     graph::gendot(g, labels, dotFile);
 }
 
-TEST(use_dfs_postordering_neg, Negative) {
+TEST_CASE("use_dfs_postordering_neg", "Negative") {
     using index_type = size_t;
     auto data = topologicalSortedListGraphWithLoop<index_type>();
     auto edges = std::get<0>(data);
@@ -53,7 +55,7 @@ TEST(use_dfs_postordering_neg, Negative) {
     }
     fmt::print("{}\n", output.str());
     
-    // EXPECT_ANY_THROW(graph::topological_sorted_list<std::vector<index_type>>(g));
-    EXPECT_ANY_THROW(throw(std::runtime_error("My error!")));
+    REQUIRE_NOTHROW(graph::topological_sorted_list<std::vector<index_type>>(g));
+    REQUIRE_THROWS(throw(std::runtime_error("My error!")));
 }
 
