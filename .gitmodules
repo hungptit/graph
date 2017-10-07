@@ -7,3 +7,7 @@
 [submodule "Celero"]
 	path = 3p/Celero
 	url = https://github.com/DigitalInBlue/Celero.git
+[submodule "3p/Catch"]
+	path = 3p/Catch
+	url = https://github.com/philsquared/Catch.git
+	branch = master
