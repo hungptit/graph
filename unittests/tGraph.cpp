@@ -1,14 +1,13 @@
-#include "gtest/gtest.h"
+#include "Data.hpp"
+#include "fmt/format.h"
+#include "graph/SparseGraph.hpp"
+#include "catch/catch.hpp"
 #include <iostream>
 #include <tuple>
 #include <vector>
-#include "fmt/format.h"
-#include "graph/SparseGraph.hpp"
-#include "Data.hpp"
 
 namespace {
-    template <typename IArchive, typename OArchive>
-    void serialize_deserialize() {
+    template <typename IArchive, typename OArchive> void serialize_deserialize() {
         using index_type = size_t;
         auto data = simpleDirectedGraph<index_type>();
         auto edges = std::get<0>(data);
@@ -16,9 +15,9 @@ namespace {
         auto N = std::get<2>(data);
         std::stringstream output;
 
-		using edge_container = decltype(edges);
-		using edge_type = typename edge_container::value_type;
-		
+        using edge_container = decltype(edges);
+        using edge_type = typename edge_container::value_type;
+
         // Serialize graph data to the output string stream
         graph::SparseGraph<index_type, edge_type> g(edges, N, true);
         {
@@ -34,9 +33,9 @@ namespace {
             IArchive iar(output);
             iar(g1);
         }
-        
+
         // The original and deserialized graphs must be the same.
-        EXPECT_TRUE(g == g1);
+        REQUIRE(g == g1);
 
         // Display the serialized results.
         std::stringstream output1;
@@ -48,7 +47,7 @@ namespace {
     }
 }
 
-TEST(BasicEdgeData, Positive) {
+TEST_CASE("BasicEdgeData", "Positive") {
     using index_type = size_t;
     using EdgeData = graph::BasicEdgeData<index_type>;
     EdgeData anEdge{1, 2};
@@ -57,10 +56,10 @@ TEST(BasicEdgeData, Positive) {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("An edge", anEdge));
     }
-    
+
     std::vector<EdgeData> edges{{1, 2}, {2, 3}, {1, 3}};
     std::sort(edges.begin(), edges.end());
-    
+
     {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Multiple edges", edges));
@@ -70,22 +69,21 @@ TEST(BasicEdgeData, Positive) {
         cereal::JSONOutputArchive oar(output);
         oar(cereal::make_nvp("Sorted edges with Less", edges));
     }
-        
+
     fmt::print("{}\n", output.str());
 }
 
-
-TEST(BasicEdgeDataHash, Positive) {
+TEST_CASE("BasicEdgeDataHash", "Positive") {
     using index_type = size_t;
     using EdgeData = graph::BasicEdgeData<index_type>;
     std::stringstream output;
     std::vector<EdgeData> data{{1, 2}, {2, 3}, {1, 2}, {1, 3}};
-    std::sort(data.begin(), data.end());    
-    
+    std::sort(data.begin(), data.end());
+
     std::unordered_set<EdgeData> edges(data.begin(), data.end());
     std::set<EdgeData> aSet(data.begin(), data.end());
-    
-    EXPECT_TRUE(edges.size() == 3);
+
+    REQUIRE(edges.size() == 3);
 
     {
         cereal::JSONOutputArchive oar(output);
@@ -98,8 +96,8 @@ TEST(BasicEdgeDataHash, Positive) {
     }
 
     {
-      cereal::JSONOutputArchive oar(output);
-      oar(cereal::make_nvp("std::set", aSet));
+        cereal::JSONOutputArchive oar(output);
+        oar(cereal::make_nvp("std::set", aSet));
     }
 
     fmt::print("{}\n", output.str());
@@ -107,22 +105,22 @@ TEST(BasicEdgeDataHash, Positive) {
     EdgeData x{1, 2};
     EdgeData y{1, 3};
     EdgeData z{2, 3};
-    EXPECT_TRUE(x < y);
-    EXPECT_TRUE(x < z);
-    EXPECT_FALSE(y < x);
-    EXPECT_TRUE(x == x);
-    EXPECT_FALSE(x == y);
+    REQUIRE(x < y);
+    REQUIRE(x < z);
+    REQUIRE(!(y < x));
+    REQUIRE(x == x);
+    REQUIRE(!(x == y));
 }
 
-TEST(WeightedEdgeDataHash, Positive) {
+TEST_CASE("WeightedEdgeDataHash", "Positive") {
     using index_type = size_t;
     using weight_type = int;
     using EdgeData = graph::WeightedEdgeData<index_type, weight_type>;
     std::vector<EdgeData> data{{1, 2, 3}, {2, 3, 1}, {1, 2, 2}, {1, 3, 0}, {1, 2, 3}};
     std::unordered_set<EdgeData> edges(data.begin(), data.end());
 
-    EXPECT_TRUE(edges.size() == 4);
-    
+    REQUIRE(edges.size() == 4);
+
     std::stringstream output;
     {
         cereal::JSONOutputArchive oar(output);
@@ -135,16 +133,15 @@ TEST(WeightedEdgeDataHash, Positive) {
     EdgeData y{1, 3, 2};
     EdgeData z{2, 3, 1};
     EdgeData t{1, 2, 3};
-    EXPECT_TRUE(x < y);
-    EXPECT_TRUE(x < z);
-    EXPECT_TRUE(x < t);
-    EXPECT_FALSE(y < x);
-    EXPECT_TRUE(x == x);
-    EXPECT_FALSE(x == y);
+    REQUIRE(x < y);
+    REQUIRE(x < z);
+    REQUIRE(x < t);
+    REQUIRE(!(y < x));
+    REQUIRE(x == x);
+    REQUIRE(!(x == y));
 }
 
-
-TEST(WeightedEdgeData, Positive) {
+TEST_CASE("WeightedEdgeData", "Positive") {
     using index_type = size_t;
     using weight_type = int;
     using EdgeData = graph::WeightedEdgeData<index_type, weight_type>;
@@ -164,15 +161,14 @@ TEST(WeightedEdgeData, Positive) {
     fmt::print("{}\n", output.str());
 }
 
-TEST(SparseGraph, Positive) {
+TEST_CASE("SparseGraph", "Positive") {
     using index_type = size_t;
     auto data = simpleDirectedGraph<index_type>();
     auto edges = std::get<0>(data);
     auto labels = std::get<1>(data);
     using edge_type = decltype(edges)::value_type;
 
-    EXPECT_TRUE(
-        std::is_sorted(edges.begin(), edges.end()));
+    REQUIRE(std::is_sorted(edges.begin(), edges.end()));
 
     std::stringstream output;
     {
@@ -191,8 +187,8 @@ TEST(SparseGraph, Positive) {
 
     // Test edges methods
     {
-        EXPECT_TRUE(g.begin(0) == 0);
-        EXPECT_TRUE(g.end(0) == 3);
+        REQUIRE(g.begin(0) == 0);
+        REQUIRE(g.end(0) == 3);
     }
 
     // Generate the dot graph
@@ -200,9 +196,10 @@ TEST(SparseGraph, Positive) {
     graph::gendot(g, labels, dotFile);
 }
 
-TEST(Serialization, Positive) {
+TEST_CASE("Serialization", "") {
     serialize_deserialize<cereal::BinaryInputArchive, cereal::BinaryOutputArchive>();
-    serialize_deserialize<cereal::PortableBinaryInputArchive, cereal::PortableBinaryOutputArchive>();
+    serialize_deserialize<cereal::PortableBinaryInputArchive,
+                          cereal::PortableBinaryOutputArchive>();
     serialize_deserialize<cereal::JSONInputArchive, cereal::JSONOutputArchive>();
     serialize_deserialize<cereal::XMLInputArchive, cereal::XMLOutputArchive>();
 }

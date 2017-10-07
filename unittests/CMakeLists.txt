@@ -3,15 +3,8 @@ PROJECT(TOOLS)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
-<<<<<<< HEAD
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-=======
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-message(${ROOT_DIR})
-
->>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9
 # Read the git tags to determine the project version
 include(GetGitVersion)
 get_git_version(GIT_VERSION)
@@ -32,21 +25,17 @@ include(CXXFeatureCheck)
 set (CMAKE_BUILD_TYPE Release)
 
 # For clang
-<<<<<<< HEAD
-set(CMAKE_CXX_COMPILER "clang++")
-=======
 # set(CMAKE_CXX_COMPILER "clang++")
->>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9
 
 # Extra compiling flags
 add_cxx_compiler_flag(-O3)
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
-add_cxx_compiler_flag(-Wextra)
+# add_cxx_compiler_flag(-Wextra)
 add_cxx_compiler_flag(-Wshadow)
-add_cxx_compiler_flag(-Werror RELEASE)
-add_cxx_compiler_flag(-Werror RELWITHDEBINFO)
-add_cxx_compiler_flag(-Werror MINSIZEREL)
+# add_cxx_compiler_flag(-Werror RELEASE)
+# add_cxx_compiler_flag(-Werror RELWITHDEBINFO)
+# add_cxx_compiler_flag(-Werror MINSIZEREL)
 add_cxx_compiler_flag(-pedantic)
 add_cxx_compiler_flag(-pedantic-errors)
 add_cxx_compiler_flag(-Wshorten-64-to-32)
@@ -55,7 +44,6 @@ add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 add_cxx_compiler_flag(-fstrict-aliasing)
 
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
-
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
@@ -71,68 +59,17 @@ endif()
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Used libraries
-<<<<<<< HEAD
-set(LIB_GTEST "${LIBRARIES}/lib/libgtest.a")
-set(LIB_GTEST_MAIN "${LIBRARIES}/lib/libgtest_main.a")
-
 # Include folder
-message(${PROJECTS_FOLDER})
-include_directories(${PROJECTS_FOLDER})
-include_directories("${PROJECTS_FOLDER}/3p/gtest/include")
-include_directories("${ROOT_DIR}/fmt/")
-include_directories ("${ROOT_DIR}/cereal/include")
+include_directories(${ROOT_DIR})
+include_directories ("${ROOT_DIR}/include")
 
 # Celero
-include_directories ("${LIBRARIES}/include/")
-set(LIB_CELERO "${LIBRARIES}/bin/libcelero${DYLIB_EXT}")
+set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.dylib")
 
-# This option make sure that we use the local boost version. Note that if the 
-# system boost is installed then CMake might use that boost version.
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_NO_SYSTEM_PATHS TRUE) 
-if (Boost_NO_SYSTEM_PATHS)
-  set(BOOST_ROOT "${LIBRARIES}")
-  set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
-  set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
-endif (Boost_NO_SYSTEM_PATHS)
-
-message(${BOOST_ROOT})
-
-find_package(Boost 1.60 REQUIRED system filesystem)
-
-if (Boost_FOUND)
-  message(${Boost_LIBRARIES})
-  include_directories(${BOOST_INCLUDE_DIRS})
-  set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
-  foreach (src_file ${UNITTEST_SRC_FILES})
-    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_GTEST} ${LIB_GTEST_MAIN}  ${LIB_FMT} -lpthread)
-    ADD_TEST(${src_file} ./${src_file})
-  endforeach (src_file)
-
-  include_directories(${BOOST_INCLUDE_DIRS})
-  set(PERF_TEST_SRC_FILES tPerf)
-  foreach (src_file ${PERF_TEST_SRC_FILES})
-    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_CELERO} ${LIB_FMT} -lpthread)
-  endforeach (src_file)
-endif (Boost_FOUND)
-=======
-set(LIB_GTEST "${ROOT_DIR}/lib/libgtest.a")
-set(LIB_GTEST_MAIN "${ROOT_DIR}/lib/libgtest_main.a")
-set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")
-
-# Include folder
-include_directories("${ROOT_DIR}/")
-include_directories("${ROOT_DIR}/include")
-
-set(UNITTEST_SRC_FILES tGraph tdfs tbfs tTopologicalSortedList)
+set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
 foreach (src_file ${UNITTEST_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file} ${LIB_GTEST} ${LIB_GTEST_MAIN} -lpthread)
+  TARGET_LINK_LIBRARIES(${src_file} -lpthread)
   ADD_TEST(${src_file} ./${src_file})
 endforeach (src_file)
 
@@ -140,6 +77,7 @@ include_directories(${BOOST_INCLUDE_DIRS})
 set(PERF_TEST_SRC_FILES tPerf)
 foreach (src_file ${PERF_TEST_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} -lpthread)
+  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${LIB_FMT} -lpthread)
 endforeach (src_file)
->>>>>>> c68d58f2fb222d0331cfc20ec61740b9e9e827c9
+
+set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")

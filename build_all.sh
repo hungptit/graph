@@ -3,8 +3,8 @@
 printf "Build fmt\n"
 ./build_using_cmake.sh fmt > /dev/null
 
-printf "Build googletest\n"
-./build_using_cmake.sh googletest > /dev/null
+printf "Build Catch\n"
+./build_using_cmake.sh Catch > /dev/null
 
 printf "Build Celero\n"
 ./build_using_cmake.sh Celero > /dev/null
