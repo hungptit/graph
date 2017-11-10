@@ -6,7 +6,7 @@
 #include "fmt/format.h"
 
 #include "Data.hpp"
-#include "graph/SparseGraph.hpp"
+#include "graph/graph.hpp"
 
 #include "cereal/archives/binary.hpp"
 #include "cereal/archives/json.hpp"

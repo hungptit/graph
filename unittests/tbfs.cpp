@@ -4,7 +4,7 @@
 
 #include "fmt/format.h"
 
-#include "graph/SparseGraph.hpp"
+#include "graph/graph.hpp"
 #include "Data.hpp"
 
 #include "cereal/archives/binary.hpp"
