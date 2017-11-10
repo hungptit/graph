@@ -1,6 +1,9 @@
 #pragma once
-#include "DataStructures.hpp"
+
 #include <vector>
+#include <deque>
+
+#include "DataStructures.hpp"
 
 namespace graph {
     /**
@@ -17,9 +20,9 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        const size_t N = g.numberOfVertexes();
+        const size_t N = g.number_of_vertexes();
         Container stack(vids.cbegin(), vids.cend());
-        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        std::vector<NodeStatus> status(N, NodeStatus::UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
         results.reserve(N);
 
@@ -27,10 +30,10 @@ namespace graph {
             index_type currentVid = stack.back();
             assert(currentVid < N);
             stack.pop_back();
-            if (status[currentVid] == UNDISCOVERED) {
+            if (status[currentVid] == NodeStatus::UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
-                status[currentVid] = DISCOVERED;
+                status[currentVid] = NodeStatus::DISCOVERED;
                 for (index_type eidx = end; eidx > begin;) {
                     const EdgeData anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
@@ -54,10 +57,10 @@ namespace graph {
         while (!stack.empty()) {
             index_type currentVid = stack.back();
             assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
-            if (status[currentVid] == UNDISCOVERED) {
+            if (status[currentVid] == NodeStatus::UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
-                status[currentVid] = VISITED;
+                status[currentVid] = NodeStatus::VISITED;
                 for (index_type eidx = end; eidx > begin;) {
                     const EdgeData anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
@@ -67,9 +70,9 @@ namespace graph {
             }
 
             stack.pop_back();
-            if (status[currentVid] == VISITED) {
+            if (status[currentVid] == NodeStatus::VISITED) {
                 results.push_back(currentVid);
-                status[currentVid] = DISCOVERED;
+                status[currentVid] = NodeStatus::DISCOVERED;
             } else {
                 // There is a loop in a given graph.
             }
@@ -91,10 +94,10 @@ namespace graph {
             index_type currentVid = stack.back();
             assert(currentVid < static_cast<index_type>(g.numberOfVertexes()));
 
-            if (status[currentVid] == UNDISCOVERED) {
+            if (status[currentVid] == NodeStatus::UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
-                status[currentVid] = VISITED;
+                status[currentVid] = NodeStatus::VISITED;
                 for (index_type eidx = end; eidx > begin;) {
                     const EdgeData anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
@@ -104,9 +107,9 @@ namespace graph {
             }
 
             stack.pop_back();
-            if (status[currentVid] == VISITED) {
+            if (status[currentVid] == NodeStatus::VISITED) {
                 results.push_front(currentVid);
-                status[currentVid] = DISCOVERED;
+                status[currentVid] = NodeStatus::DISCOVERED;
             } else {
                 // throw(std::runtime_error("Found a loop in a given graph"));
             }
@@ -117,8 +120,8 @@ namespace graph {
     std::vector<typename Graph::index_type>
     dfs_postordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
-        size_t N = g.numberOfVertexes();
-        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        size_t N = g.number_of_vertexes();
+        std::vector<NodeStatus> status(N, NodeStatus::UNDISCOVERED);
         std::vector<index_type> results;
         results.reserve(N);
         dfs_postordering_back<Container>(g, vids, status, results);
@@ -140,15 +143,15 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
         assert(vid < static_cast<index_type>(g.numberOfVertexes()));
-        if (status[vid] == UNDISCOVERED) {
+        if (status[vid] == NodeStatus::UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
-            status[vid] = DISCOVERED;
+            status[vid] = NodeStatus::DISCOVERED;
             results.push_back(vid);
             for (index_type eidx = begin; eidx < end; ++eidx) {
                 const EdgeData anEdge = g.edge(eidx);
                 const index_type childVid = anEdge.DstId;
-                if (status[childVid] == UNDISCOVERED) {
+                if (status[childVid] == NodeStatus::UNDISCOVERED) {
                     dfs_recursive_preordering(g, childVid, status, results);
                 }
             }
@@ -162,14 +165,14 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
         assert(vid < static_cast<index_type>(g.numberOfVertexes()));
-        if (status[vid] == UNDISCOVERED) {
+        if (status[vid] == NodeStatus::UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
-            status[vid] = DISCOVERED;
+            status[vid] = NodeStatus::DISCOVERED;
             for (index_type eidx = begin; eidx < end; ++eidx) {
                 const EdgeData anEdge = g.edge(eidx);
                 const index_type childVid = anEdge.DstId;
-                if (status[childVid] == UNDISCOVERED) {
+                if (status[childVid] == NodeStatus::UNDISCOVERED) {
                     dfs_recursive_postordering(g, childVid, status, results);
                 }
             }

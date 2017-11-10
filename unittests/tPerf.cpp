@@ -1,9 +1,9 @@
 #include <iostream>
 #include <tuple>
 #include <vector>
+#include <sstream>
 
 #include "fmt/format.h"
-
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 

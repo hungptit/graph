@@ -19,20 +19,20 @@ namespace graph {
     template <typename Stack, typename Graph>
     std::deque<typename Graph::index_type> topological_sorted_list(const Graph &g) {
         using index_type = typename Graph::index_type;
-        const index_type N = g.numberOfVertexes();
+        const index_type N = g.number_of_vertexes();
         std::deque<index_type> results;
-        std::vector<NodeStatus> status(N, UNDISCOVERED);
+        std::vector<NodeStatus> status(N, NodeStatus::UNDISCOVERED);
 
         // TODO: Only push independent nodes into results.
         for (index_type vid = 0; vid < N; ++vid) {
             if (g.begin(vid) == g.end(vid)) {
                 results.push_front(vid);
-                status[vid] = DISCOVERED;
+                status[vid] = NodeStatus::DISCOVERED;
             }
         }
 
         for (index_type vid = 0; vid < N; ++vid) {
-            if (status[vid] == UNDISCOVERED) {
+            if (status[vid] == NodeStatus::UNDISCOVERED) {
                 dfs_postordering_front<Stack>(g, {vid}, status, results);
             }
         }

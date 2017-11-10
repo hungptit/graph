@@ -14,22 +14,6 @@
 #include <iostream>
 #include <vector>
 
-// fmt
-#include "fmt/format.h"
-
-// Cereal
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
-#include "cereal/types/array.hpp"
-#include "cereal/types/deque.hpp"
-#include "cereal/types/string.hpp"
-#include "cereal/types/set.hpp"
-#include "cereal/types/unordered_map.hpp"
-#include "cereal/types/unordered_set.hpp"
-#include "cereal/types/vector.hpp"
-
 // graph
 #include "BFS.hpp"
 #include "DFS.hpp"

@@ -7,6 +7,18 @@
 #include "graph/SparseGraph.hpp"
 #include "Data.hpp"
 
+#include "cereal/archives/binary.hpp"
+#include "cereal/archives/json.hpp"
+#include "cereal/archives/portable_binary.hpp"
+#include "cereal/archives/xml.hpp"
+#include "cereal/types/array.hpp"
+#include "cereal/types/deque.hpp"
+#include "cereal/types/string.hpp"
+#include "cereal/types/set.hpp"
+#include "cereal/types/unordered_map.hpp"
+#include "cereal/types/unordered_set.hpp"
+#include "cereal/types/vector.hpp"
+
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"
 
@@ -75,7 +87,7 @@ TEST_CASE("dfs_recursive_preordering", "Positive") {
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
     index_type rootVid = 0;
 
-    std::vector<graph::NodeStatus> status(N, graph::UNDISCOVERED);
+    std::vector<graph::NodeStatus> status(N, graph::NodeStatus::UNDISCOVERED);
     std::vector<index_type> vids;
     vids.reserve(N);
 
@@ -106,7 +118,7 @@ TEST_CASE("dfs_recursive_postordering", "Positive") {
     graph::SparseGraph<index_type, decltype(edges)::value_type> g(edges, N, true);
     index_type rootVid = 0;
 
-    std::vector<graph::NodeStatus> status(N, graph::UNDISCOVERED);
+    std::vector<graph::NodeStatus> status(N, graph::NodeStatus::UNDISCOVERED);
     std::vector<index_type> vids;
     vids.reserve(N);
 
