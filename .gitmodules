@@ -11,3 +11,7 @@
 	path = 3p/Catch
 	url = https://github.com/philsquared/Catch.git
 	branch = master
+[submodule "3p/benchmark"]
+	path = 3p/benchmark
+	url = https://github.com/google/benchmark.git
+	branch = master
