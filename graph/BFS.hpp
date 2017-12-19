@@ -19,7 +19,7 @@ namespace graph {
         using index_type = typename Graph::index_type;
         using EdgeData = typename Graph::edge_type;
 
-        size_t N = g.numberOfVertexes();
+        size_t N = g.number_of_vertexes();
         Container aQueue(vids.begin(), vids.end());
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;

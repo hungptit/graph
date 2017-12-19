@@ -111,48 +111,52 @@ namespace graph {
         using vertex_container = std::vector<index_type>;
         using edge_iterator = typename edge_container::const_iterator;
 
-        SparseGraph() noexcept : Vertexes(), Edges(), IsDirected()  {}
+		// Constructors
+        explicit SparseGraph() noexcept = default;
 
         template <typename T>
-        SparseGraph(T &&data, const std::size_t N, const bool isDirected) noexcept
-            : Vertexes(), Edges(), IsDirected(isDirected) {
+        explicit SparseGraph(T &&data, const std::size_t N, const bool is_directed_graph) noexcept
+            : vertexes_(), edges_(), is_directed_(is_directed_graph) {
             build(std::forward<T>(data), N);
         }
 
-        SparseGraph(vertex_container &&v, edge_container &&e, bool isDirected) noexcept
-            : Vertexes(std::move(v)), Edges(std::move(e)), IsDirected(isDirected) {}
+        explicit SparseGraph(vertex_container &&v, edge_container &&e, bool is_directed_graph) noexcept
+            : vertexes_(std::move(v)), edges_(std::move(e)), is_directed_(is_directed_graph) {}
 
+		// Build a sparse directed graph from given graph information.
         template <typename Container>
-        void build(Container &&edges, const std::size_t N, bool isDirected = true) {
+        void build(Container &&edges, const std::size_t N, bool is_directed_graph = true) {
             /// This function assume that edges vector is sorted.
             assert(std::is_sorted(edges.begin(), edges.end()));
 
-            IsDirected = isDirected;
-            Edges = std::forward<Container>(edges);
+            is_directed_ = is_directed_graph;
+            edges_ = std::forward<Container>(edges);
 
             // Update the vertex information.
-            Vertexes.assign(N + 1, 0);
-            std::for_each(Edges.cbegin(), Edges.cend(), [&](auto const &anEdge) {
+            vertexes_.assign(N + 1, 0);
+            std::for_each(edges_.cbegin(), edges_.cend(), [&](auto const &anEdge) {
                 // Make sure that vertex and edge information are synced.
                 assert(static_cast<index_type>(N) > anEdge.SrcId);
-                Vertexes[anEdge.SrcId + 1]++;
+                vertexes_[anEdge.SrcId + 1]++;
             });
 
             // Update the begin and end location for each column.
             for (std::size_t currentCol = 0; currentCol < N; ++currentCol) {
-                Vertexes[currentCol + 1] += Vertexes[currentCol];
+                vertexes_[currentCol + 1] += vertexes_[currentCol];
             }
         }
 
-        bool isDirected() const { return IsDirected; };
-        const index_type begin(const index_type vid) const { return Vertexes[vid]; }
-        const index_type end(const index_type vid) const { return Vertexes[vid + 1]; }
-        const edge_type edge(const index_type eid) const { return Edges[eid]; }
-        size_t numberOfVertexes() const { return Vertexes.size() - 1; }
+        const index_type begin(const index_type vid) const { return vertexes_[vid]; }
+        const index_type end(const index_type vid) const { return vertexes_[vid + 1]; }
+        const edge_type edge(const index_type eid) const { return edges_[eid]; }
+
+		bool is_directed() const { return is_directed_; };
+		const size_t number_of_vertexes() const { return vertexes_.size() - 1; }
+		const size_t number_of_edges() const { return edges_.size(); }
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(cereal::make_nvp("IsDirected", IsDirected),
-               cereal::make_nvp("Vertexes", Vertexes), cereal::make_nvp("Edges", Edges));
+            ar(cereal::make_nvp("is_directed", is_directed_),
+               cereal::make_nvp("vertexes", vertexes_), cereal::make_nvp("edges", edges_));
         }
 
         template <typename index_type, typename edge_type>
@@ -160,20 +164,21 @@ namespace graph {
                                const SparseGraph<index_type, edge_type> &rhs);
 
       private:
-        std::vector<index_type> Vertexes;
-        std::vector<edge_type> Edges;
-        bool IsDirected;
+        std::vector<index_type> vertexes_;
+        std::vector<edge_type> edges_;
+        bool is_directed_;
     };
 
     template <typename index_type, typename edge_type>
     bool operator==(const SparseGraph<index_type, edge_type> &lhs,
                     const SparseGraph<index_type, edge_type> &rhs) {
-        return std::tie(lhs.IsDirected, lhs.Vertexes, lhs.Edges) ==
-               std::tie(rhs.IsDirected, rhs.Vertexes, rhs.Edges);
+        return std::tie(lhs.is_directed_, lhs.vertexes_, lhs.edges_) ==
+               std::tie(rhs.is_directed_, rhs.vertexes_, rhs.edges_);
     }
 }
 
 // Customized hash function for different edge type.
+// TODO: We should not write this hash function by ourself.
 namespace std {
     template <typename index_type> struct hash<graph::BasicEdgeData<index_type>> {
         using result_type = std::size_t;

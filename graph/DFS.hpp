@@ -2,6 +2,8 @@
 #include "DataStructures.hpp"
 #include <vector>
 
+// TODO: Compare the performance of non-recursive and recursive implementations.
+
 namespace graph {
     /**
      * Non-recursive implementation of the DFS algorithms
@@ -15,9 +17,9 @@ namespace graph {
     std::vector<typename Graph::index_type>
     dfs_preordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
-        using EdgeData = typename Graph::edge_type;
-
-        const size_t N = g.numberOfVertexes();
+        using edge_type = typename Graph::edge_type;
+		
+        const size_t N = g.number_of_vertexes();
         Container stack(vids.cbegin(), vids.cend());
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<typename Graph::index_type> results;
@@ -25,14 +27,16 @@ namespace graph {
 
         while (!stack.empty()) {
             index_type currentVid = stack.back();
-            assert(currentVid < N);
+            assert(currentVid < N); // Validate the currentVid
             stack.pop_back();
             if (status[currentVid] == UNDISCOVERED) {
                 index_type const begin = g.begin(currentVid);
                 index_type const end = g.end(currentVid);
                 status[currentVid] = DISCOVERED;
+				// Mark the current vertex as DISCOVERED then traverse to all of
+				// its children.
                 for (index_type eidx = end; eidx > begin;) {
-                    const EdgeData anEdge = g.edge(--eidx);
+                    const edge_type anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
                     stack.push_back(childVid);
                 }
@@ -42,13 +46,14 @@ namespace graph {
         return results;
     }
 
+	// TODO: Need to check this algorithm.
     template <typename Container, typename Graph>
     void dfs_postordering_back(const Graph &g,
                                const std::vector<typename Graph::index_type> &vids,
                                std::vector<NodeStatus> &status,
                                std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
-        using EdgeData = typename Graph::edge_type;
+        using edge_type = typename Graph::edge_type;
         Container stack(vids.cbegin(), vids.cend());
 
         while (!stack.empty()) {
@@ -59,7 +64,7 @@ namespace graph {
                 index_type const end = g.end(currentVid);
                 status[currentVid] = VISITED;
                 for (index_type eidx = end; eidx > begin;) {
-                    const EdgeData anEdge = g.edge(--eidx);
+                    const edge_type anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
                     stack.push_back(childVid);
                 }
@@ -77,13 +82,14 @@ namespace graph {
     }
 
     // This function assume that a given graph is DAG.
+	// TODO: Need to check this algorithm.
     template <typename Container, typename Graph>
     void dfs_postordering_front(const Graph &g,
                                 const std::vector<typename Graph::index_type> &vids,
                                 std::vector<NodeStatus> &status,
                                 std::deque<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
-        using EdgeData = typename Graph::edge_type;
+        using edge_type = typename Graph::edge_type;
 
         Container stack(vids.cbegin(), vids.cend());
 
@@ -96,7 +102,7 @@ namespace graph {
                 index_type const end = g.end(currentVid);
                 status[currentVid] = VISITED;
                 for (index_type eidx = end; eidx > begin;) {
-                    const EdgeData anEdge = g.edge(--eidx);
+                    const edge_type anEdge = g.edge(--eidx);
                     const index_type childVid = anEdge.DstId;
                     stack.push_back(childVid);
                 }
@@ -117,7 +123,7 @@ namespace graph {
     std::vector<typename Graph::index_type>
     dfs_postordering(const Graph &g, const std::vector<typename Graph::index_type> &vids) {
         using index_type = typename Graph::index_type;
-        size_t N = g.numberOfVertexes();
+        size_t N = g.number_of_vertexes();
         std::vector<NodeStatus> status(N, UNDISCOVERED);
         std::vector<index_type> results;
         results.reserve(N);
@@ -138,15 +144,15 @@ namespace graph {
                                    std::vector<NodeStatus> &status,
                                    std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
-        using EdgeData = typename Graph::edge_type;
-        assert(vid < static_cast<index_type>(g.numberOfVertexes()));
+        using edge_type = typename Graph::edge_type;
+        assert(vid < static_cast<index_type>(g.number_of_vertexes()));
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
             status[vid] = DISCOVERED;
             results.push_back(vid);
             for (index_type eidx = begin; eidx < end; ++eidx) {
-                const EdgeData anEdge = g.edge(eidx);
+                const edge_type anEdge = g.edge(eidx);
                 const index_type childVid = anEdge.DstId;
                 if (status[childVid] == UNDISCOVERED) {
                     dfs_recursive_preordering(g, childVid, status, results);
@@ -160,14 +166,14 @@ namespace graph {
                                     std::vector<NodeStatus> &status,
                                     std::vector<typename Graph::index_type> &results) {
         using index_type = typename Graph::index_type;
-        using EdgeData = typename Graph::edge_type;
-        assert(vid < static_cast<index_type>(g.numberOfVertexes()));
+        using edge_type = typename Graph::edge_type;
+        assert(vid < static_cast<index_type>(g.number_of_vertexes()));
         if (status[vid] == UNDISCOVERED) {
             index_type const begin = g.begin(vid);
             index_type const end = g.end(vid);
             status[vid] = DISCOVERED;
             for (index_type eidx = begin; eidx < end; ++eidx) {
-                const EdgeData anEdge = g.edge(eidx);
+                const edge_type anEdge = g.edge(eidx);
                 const index_type childVid = anEdge.DstId;
                 if (status[childVid] == UNDISCOVERED) {
                     dfs_recursive_postordering(g, childVid, status, results);

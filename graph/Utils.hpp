@@ -8,7 +8,7 @@ namespace graph {
     void gendot(Graph &g, std::vector<std::string> &v,
                 const std::string &dotfile) {
         Writer writer;
-        writer << (g.isDirected() ? ("digraph") : ("graph"))
+        writer << (g.is_directed() ? ("digraph") : ("graph"))
                << (" G {\n"); // Header
 
         // Write vertex's information
@@ -21,8 +21,8 @@ namespace graph {
         }
 
         // Write edge's' information
-        const std::string direction = g.isDirected() ? "->" : "--";
-        std::size_t N = g.numberOfVertexes();
+        const std::string direction = g.is_directed() ? "->" : "--";
+        std::size_t N = g.number_of_vertexes();
         for (std::size_t vid = 0; vid < N; ++vid) {
             auto begin = g.begin(vid);
             auto end = g.end(vid);

@@ -19,7 +19,7 @@ namespace graph {
     template <typename Stack, typename Graph>
     std::deque<typename Graph::index_type> topological_sorted_list(const Graph &g) {
         using index_type = typename Graph::index_type;
-        const index_type N = g.numberOfVertexes();
+        const index_type N = g.number_of_vertexes();
         std::deque<index_type> results;
         std::vector<NodeStatus> status(N, UNDISCOVERED);
 
