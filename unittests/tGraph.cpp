@@ -1,9 +1,24 @@
-#include "Data.hpp"
-#include "fmt/format.h"
-#include "graph/SparseGraph.hpp"
 #include <iostream>
 #include <tuple>
 #include <vector>
+
+#include "fmt/format.h"
+#include "graph/graph.hpp"
+#include "graph/data_structures.hpp"
+#include "Data.hpp"
+
+// Cereal
+#include "cereal/archives/binary.hpp"
+#include "cereal/archives/json.hpp"
+#include "cereal/archives/portable_binary.hpp"
+#include "cereal/archives/xml.hpp"
+#include "cereal/types/array.hpp"
+#include "cereal/types/deque.hpp"
+#include "cereal/types/string.hpp"
+#include "cereal/types/set.hpp"
+#include "cereal/types/unordered_map.hpp"
+#include "cereal/types/unordered_set.hpp"
+#include "cereal/types/vector.hpp"
 
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"

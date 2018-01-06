@@ -1,6 +1,7 @@
 #pragma once
 
-#include "DataStructures.hpp"
+#include <fstream>
+#include "data_structures.hpp"
 
 namespace graph {
     /// Write input graph information to a dot file.

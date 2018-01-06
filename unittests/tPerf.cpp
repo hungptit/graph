@@ -1,10 +1,10 @@
 #include <iostream>
 #include <tuple>
 #include <vector>
+#include <sstream>
 
 #include "fmt/format.h"
-
-#include "graph/SparseGraph.hpp"
+#include "graph/graph.hpp"
 #include "Data.hpp"
 
 #include "celero/Celero.h"

@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 
-#include "graph/DataStructures.hpp"
+#include "graph/graph.hpp"
 
 namespace {
     // The test graph is taken from this wiki page:

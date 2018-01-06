@@ -9,12 +9,14 @@
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/archives/xml.hpp"
 #include "cereal/types/array.hpp"
+#include "cereal/types/chrono.hpp"
+#include "cereal/types/deque.hpp"
 #include "cereal/types/string.hpp"
 #include "cereal/types/vector.hpp"
 
 namespace graph {
-    enum NodeStatus { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
-    enum NodeColors { BLACK, WHITE };
+    enum class NodeStatus : int8_t { UNDISCOVERED, VISITED, DISCOVERED, PROCESSED };
+    enum class NodeColors : int8_t { BLACK, WHITE };
 
     /**
      * BasicEdgeData
@@ -36,9 +38,7 @@ namespace graph {
 
         BasicEdgeData &operator=(const BasicEdgeData &) noexcept = default;
 
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId));
-        }
+        template <typename Archive> void serialize(Archive &ar) { ar(SrcId, DstId); }
     };
 
     template <typename index_type>
@@ -76,10 +76,7 @@ namespace graph {
 
         WeightedEdgeData &operator=(const WeightedEdgeData &rhs) = default;
 
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(cereal::make_nvp("srcid", SrcId), cereal::make_nvp("dstid", DstId),
-               cereal::make_nvp("weight", Weight));
-        }
+        template <typename Archive> void serialize(Archive &ar) { ar(SrcId, DstId, Weight); }
     };
 
     template <typename index_type, typename weight_type>
@@ -111,24 +108,25 @@ namespace graph {
         using vertex_container = std::vector<index_type>;
         using edge_iterator = typename edge_container::const_iterator;
 
-		// Constructors
+        // Constructors
         explicit SparseGraph() noexcept = default;
 
         template <typename T>
-        explicit SparseGraph(T &&data, const std::size_t N, const bool is_directed_graph) noexcept
+        explicit SparseGraph(T &&data, const std::size_t N,
+                             const bool is_directed_graph) noexcept
             : vertexes_(), edges_(), is_directed_(is_directed_graph) {
             build(std::forward<T>(data), N);
         }
 
-        explicit SparseGraph(vertex_container &&v, edge_container &&e, bool is_directed_graph) noexcept
+        explicit SparseGraph(vertex_container &&v, edge_container &&e,
+                             bool is_directed_graph) noexcept
             : vertexes_(std::move(v)), edges_(std::move(e)), is_directed_(is_directed_graph) {}
 
-		// Build a sparse directed graph from given graph information.
+        // Build a sparse directed graph from given graph information.
         template <typename Container>
         void build(Container &&edges, const std::size_t N, bool is_directed_graph = true) {
             /// This function assume that edges vector is sorted.
             assert(std::is_sorted(edges.begin(), edges.end()));
-
             is_directed_ = is_directed_graph;
             edges_ = std::forward<Container>(edges);
 
@@ -150,9 +148,9 @@ namespace graph {
         const index_type end(const index_type vid) const { return vertexes_[vid + 1]; }
         const edge_type edge(const index_type eid) const { return edges_[eid]; }
 
-		bool is_directed() const { return is_directed_; };
-		const size_t number_of_vertexes() const { return vertexes_.size() - 1; }
-		const size_t number_of_edges() const { return edges_.size(); }
+        bool is_directed() const { return is_directed_; };
+        const size_t number_of_vertexes() const { return vertexes_.size() - 1; }
+        const size_t number_of_edges() const { return edges_.size(); }
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(cereal::make_nvp("is_directed", is_directed_),
@@ -175,7 +173,7 @@ namespace graph {
         return std::tie(lhs.is_directed_, lhs.vertexes_, lhs.edges_) ==
                std::tie(rhs.is_directed_, rhs.vertexes_, rhs.edges_);
     }
-}
+} // namespace graph
 
 // Customized hash function for different edge type.
 // TODO: We should not write this hash function by ourself.
@@ -200,4 +198,4 @@ namespace std {
             return h1 ^ (h2 << 4) ^ (h3 << 8);
         }
     };
-}
+} // namespace std
