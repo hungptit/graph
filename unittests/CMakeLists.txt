@@ -61,11 +61,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Include folder
 include_directories(${ROOT_DIR})
-include_directories ("${ROOT_DIR}/include")
+include_directories("${ROOT_DIR}/../3p/include")
 
 # Celero
-# set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.so")
-# set(LIB_CELERO "${ROOT_DIR}/bin/libcelero.dylib")
+set(LIB_CELERO "${ROOT_DIR}../3p/lib/libcelero.a")
+# set(LIB_CELERO "${ROOT_DIR}../3p/lib/libcelero.dylib")
 
 set(UNITTEST_SRC_FILES  tGraph tdfs tbfs tTopologicalSortedList)
 foreach (src_file ${UNITTEST_SRC_FILES})
@@ -76,10 +76,8 @@ endforeach (src_file)
 
 link_directories(${ROOT_DIR}/bin)
 include_directories(${BOOST_INCLUDE_DIRS})
-set(LIB_CELERO "-lcelero")
 set(PERF_TEST_SRC_FILES tPerf)
 foreach (src_file ${PERF_TEST_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${LIB_FMT} -lpthread)
 endforeach (src_file)
-
